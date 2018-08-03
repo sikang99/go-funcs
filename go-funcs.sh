@@ -88,9 +88,9 @@ function goget() {
 }
 
 # search repos of github.com with the given text
-function gog() {
+function gogl() {
 	if [ $# = 0 ]; then
-		echo "usage: gog <search text>"
+		echo "usage: gogl <search text>"
 		return
 	fi
     hub-search --lang=go $1
