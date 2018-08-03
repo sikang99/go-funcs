@@ -44,24 +44,13 @@ clean:
 	rm -f ./$(PROGRAM)
 
 # ---------------------------------------------------------------------------
-git-hub gh:
-	ssh -T git@github.com
-
 git-update gu:
-	git init
-	git add README.md Makefile $(PROGRAM).go
-	git commit -m "git test and update Makefile"
-	git push -u https://sikang99@github.com/sikang99/$(PROGRAM) master
+	git add README.md Makefile *.sh
+	git commit -m "Update some contents"
+	git push -u https://sikang99@github.com/sikang99/go-funcs
 
 git-status gs:
 	git status
 	git log --oneline -5
-
-git-origin go:
-	git init
-	git add README.md Makefile $(PROGRAM).go
-	git commit -m "git test and update Makefile"
-	git remote add origin https://sikang99@github.com/sikang99/$(PROGRAM)
-	git push -u origin master
 
 # ---------------------------------------------------------------------------
