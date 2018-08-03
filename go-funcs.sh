@@ -62,6 +62,7 @@ function goget() {
 	fi
 	package=""
 	option=""
+    flag=""
 	while [ "$1" != "" ]; do
 		case $1 in
 		http*://*.git)	
@@ -78,13 +79,18 @@ function goget() {
         -u | -v)	
             option="$option $1" 
             ;;
+        -n | --nocd)	
+            flag="nocd"
+            ;;
 		*) 	package=$1 ;;
 		esac
 		shift
 	done
 	echo "> go get $option $package"
 	go get $option $package
-    cd $GOPATH/src/${package%/...}
+    if [ "$flag" = "" ]; then
+        cd $GOPATH/src/${package%/...}
+    fi
 }
 
 # search repos of github.com with the given text
