@@ -8,7 +8,7 @@ Some utility shell script functions useful in the go development environment
 ```
 $ go get github.com/sikang99/go-funcs
 $ cd $GOPATH/src/github.com/sikang99/go-funcs
-$ source ./go-funcs.sh
+$ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 ```
 
 ### Usage
@@ -49,6 +49,7 @@ $ gogl
 usage: gogl <search text>
 
 $ gogl "github search"
+...
 ```
 
 ### Reference
