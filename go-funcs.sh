@@ -43,6 +43,10 @@ function gopath() {
 		return
 	fi
     list=$(eval find $GOPATH/src -iname $1 -type d -print)
+    if [ "$list" = "" ]; then
+        echo "> $1 not found in $GOPATH/src"
+        return
+    fi
     for dir in $list; do
         cd $dir
         return
