@@ -47,7 +47,7 @@ $ goget https://github.com/sikang99/go-funcs
 $ gogl
 usage: gogl <search text>
 
-$ gogl github search
+$ gogl "github search"
 ```
 
 ### Reference
