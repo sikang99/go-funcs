@@ -1,6 +1,6 @@
 ## Go-Funcs
 
-Some utility shell script functions in the go development environment
+Some utility shell script functions useful in the go development environment
 
 
 ## Installation
@@ -26,13 +26,14 @@ To download go sources from open repos, use goget regardless of includng http sc
 $ goget 
 
 $ goget https://github.com/sikang99/go-funcs.git
-$ goget github.com/sikang99/go-funcs
+$ goget https;//github.com/sikang99/go-funcs -u
+$ goget github.com/sikang99/go-funcs/... -u -v
 ```
 
 
 ### Reference
 
-- [tj/go-search](http://github.com/tj-go-search)
+- [Advanced Bash-Scripting Guide](https://www.tldp.org/LDP/abs/html/index.html)
 
 ### LICENSE
 
