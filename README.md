@@ -41,6 +41,15 @@ $ pwd
 GOPATH/src/github.com/sikang99/go-funcs
 ```
 
+To use `gogl`, install [sikang99/hub-search](https://github.com/sikang99/go-funcs).
+```
+$ goget https://github.com/sikang99/go-funcs
+$ gogl
+usage: gogl <search text>
+
+$ gogl github search
+```
+
 ### Reference
 
 - [Advanced Bash-Scripting Guide](https://www.tldp.org/LDP/abs/html/index.html)
