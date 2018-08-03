@@ -30,6 +30,8 @@ $ goget https://github.com/sikang99/go-funcs.git
 $ goget https;//github.com/sikang99/go-funcs -u
 $ goget github.com/sikang99/go-funcs/... -u -v
 $ goget -u github.com/sikang99/go-funcs/... -v
+$ pwd
+GOPATH/src/github.com/sikang99/go-funcs
 ```
 
 To change to the directory that you check the go sources downloaded, use `gopath` as following.
