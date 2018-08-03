@@ -21,7 +21,7 @@ usage: gopath <name>
 usage: gogl <search text>
 ```
 
-To download go sources from open repos, use goget regardless of includng http scheme or .git tail.
+To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
 ```
 $ goget 
 
@@ -30,6 +30,12 @@ $ goget https;//github.com/sikang99/go-funcs -u
 $ goget github.com/sikang99/go-funcs/... -u -v
 ```
 
+To move to the directory that you check the go sources downloaded, use `gopath`.
+```
+$ gopath
+
+$ gopath go-funcs
+```
 
 ### Reference
 
