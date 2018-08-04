@@ -54,7 +54,17 @@ $ gogl "github search"
 ...
 ```
 
-To select a go version installed, use `goroot` with version number such as 1.10, 1.11
+To select a specific go version installed, use `goroot` with version number such as 1.10, 1.11
+Currently my case for go versions is as following.
+```
+$ tree -L 1 $GOROOT/..
+$HOME/root/go/..
+├── bak
+├── go -> go1.11beta2
+├── go1.10.3
+└── go1.11beta2
+```
+try to use `goroot`
 ```
 $ goroot
 usage: goroot <version>
