@@ -35,14 +35,18 @@ $ pwd
 GOPATH/src/github.com/sikang99/go-funcs
 ```
 
-To change to the directory that you check the go sources downloaded, use `gopath` as following.
+To change to the directory that you check the go sources downloaded, use `gopath` as following.  
+`/vendor` and `/_` directories are excluded
 ```
 $ gopath
 usage: gopath <name>
 
 $ gopath go-funcs
-$ pwd
 GOPATH/src/github.com/sikang99/go-funcs
+
+$ gopath github.com
+GOPATH/src/github.com
+
 ```
 
 To use `gogl`, install [sikang99/hub-search](https://github.com/sikang99/go-funcs).
