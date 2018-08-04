@@ -1,5 +1,5 @@
 #---------------------------------------------------------------------
-# Utility functions
+# Utility Functions for Gophers
 #---------------------------------------------------------------------
 # direct directory jump
 function goto() {
@@ -34,7 +34,7 @@ function f() {
 	find ~ -iname $1 -type f -print
 }
 
-# fast file finder from GOPATH
+# fast package finder from GOPATH
 function gopath() {
 	if [ $# = 0 ]; then
 		echo "usage: gopath <name>"
@@ -42,13 +42,19 @@ function gopath() {
 	fi
     list=$(eval find $GOPATH/src -iname $1 -type d -print)
     if [ "$list" = "" ]; then
-        echo "> $1 not found in $GOPATH/src"
+        echo "> package '$1' not found in $GOPATH/src"
         return
     fi
     for dir in $list; do
-        cd $dir
-        return
+        # exclude /vendor or /_ diectories
+        if [[ $dir = *"/vendor/"* ]] || [[ $dir = *"/_"* ]]; then
+            continue
+        else
+            cd $dir
+            return
+        fi
     done
+    echo "> package '$1' not found in $GOPATH/src"
 }
 
 # go get a package and goto its directory
@@ -100,6 +106,7 @@ function gogl() {
     hub-search --lang=go $1
 }
 
+# Select a go version to use among installed
 function goroot() {
 	if [ $# = 0 ]; then
 		echo "usage: goroot <go version>"
@@ -128,5 +135,6 @@ function usage() {
     goget
     gopath
     gogl
+    goroot
 }
 
