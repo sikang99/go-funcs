@@ -36,7 +36,7 @@ GOPATH/src/github.com/sikang99/go-funcs
 ```
 
 To change to the directory that you check the go sources downloaded, use `gopath` as following.  
-`/vendor` and `/_` directories are excluded
+`/vendor` and `/_` directories are excluded in search
 ```
 $ gopath
 usage: gopath <name>
@@ -59,8 +59,10 @@ $ gogl "github search"
 ...
 ```
 
-To select a specific go version installed, use `goroot` with version number such as 1.10, 1.11
-Currently my case for go versions is as following.
+To select a specific go version installed in your environment, 
+use `goroot` with version number such as 1.10, 1.11
+Currently my case with two go versions is as following. 
+If your want to support more versions, plz edit the script. 
 ```
 $ tree -L 1 $GOROOT/..
 $HOME/root/go/..
