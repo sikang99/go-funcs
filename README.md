@@ -58,7 +58,7 @@ $ gopath github.com
 GOPATH/src/github.com
 ```
 
-To use `gogl`, install [sikang99/hub-search](https://github.com/sikang99/go-funcs).
+To use `gogl`, install the package [sikang99/hub-search](https://github.com/sikang99/go-funcs).
 ```
 $ goget https://github.com/sikang99/go-funcs
 $ gogl
