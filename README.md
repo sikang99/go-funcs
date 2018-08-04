@@ -5,7 +5,8 @@ Some utility shell script functions useful in the go development environment
 
 ## Installation
 
-```
+
+```sh
 $ go get github.com/sikang99/go-funcs
 $ cd $GOPATH/src/github.com/sikang99/go-funcs
 $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
@@ -14,7 +15,8 @@ $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 ### Usage
 
 To see help message of usage after installation, 
-```
+
+```sh
 $ usage
 usage: goto [.|..|root|path|stoney|wasm|webcam|http]
 usage: goget [<option>] <package path>
@@ -24,7 +26,8 @@ usage: gover <go version>
 ```
 
 To change a specific directory, use `goto`.
-```
+
+```sh
 $ goto
 usage: goto [.|..|root|path|stoney|wasm|webcam|http]
 
@@ -33,7 +36,8 @@ $ goto .. # return to the saved directory
 ```
 
 To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
-```
+
+```sh
 $ goget
 usage: goget [<option>] <package path>
 
@@ -47,7 +51,8 @@ GOPATH/src/github.com/sikang99/go-funcs
 
 To change to the directory that you check the go sources downloaded, use `gopath` as following.  
 `/vendor` and `/_` directories are excluded in search
-```
+
+```sh
 $ gopath
 usage: gopath <package name>
 
@@ -59,7 +64,8 @@ GOPATH/src/github.com
 ```
 
 To use `gogl`, install the package [sikang99/hub-search](https://github.com/sikang99/go-funcs).
-```
+
+```sh
 $ goget https://github.com/sikang99/go-funcs
 $ gogl
 usage: gogl <search text>
@@ -89,7 +95,8 @@ To select a specific go version installed in your environment,
 use `gover` with version number such as 1,9, 1.10, 1.11
 Currently my case with two go versions is as following. 
 If your want to support more versions, plz edit the script. 
-```
+
+```sh
 $ tree -L 1 $GOROOT/..
 $HOME/root/go/..
 ├── bak
@@ -100,7 +107,8 @@ $HOME/root/go/..
 ```
 
 Let's try to use `gover`.
-```
+
+```sh
 $ gover
 usage: gover <go version>
 
