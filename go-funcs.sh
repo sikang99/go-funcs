@@ -115,7 +115,7 @@ function goroot() {
         ln -s $HOME/coding/go/root/go1.11beta2 $HOME/coding/go/root/go
         ;;
     *)
-       echo "$1 is not installed"
+       echo "$1 is not installed. select 1.10 or 1.11"
        return
        ;;
    esac

@@ -37,7 +37,7 @@ git g:
 git-update gu:
 	git add README.md Makefile *.sh
 	#git commit -m "Update some contents"
-	git commit -m "add goroot functions changing go version to use"
+	git commit -m "add goroot function changing go version to use"
 	git push -u https://sikang99@github.com/sikang99/go-funcs
 
 git-status gs:
