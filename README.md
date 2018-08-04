@@ -94,6 +94,7 @@ $ tree -L 1 $GOROOT/..
 $HOME/root/go/..
 ├── bak
 ├── go -> go1.11beta2
+├── go1.9.7
 ├── go1.10.3
 └── go1.11beta3
 ```
@@ -102,7 +103,7 @@ try to use `gover`
 $ gover
 usage: gover <go version>
 
-$ gover 1.10 # or 1.10.3, go1.10.3
+$ gover 1.10 # or 1.9, 1.10.3, go1.10.3
 go version go1.10.3 linux/amd64
 
 $ gover 1.11
