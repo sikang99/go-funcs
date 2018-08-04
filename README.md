@@ -98,7 +98,8 @@ $HOME/root/go/..
 ├── go1.10.3
 └── go1.11beta3
 ```
-try to use `gover`
+
+Let's try to use `gover`.
 ```
 $ gover
 usage: gover <go version>
@@ -118,4 +119,3 @@ go version go1.11beta3 linux/amd64
 ### LICENSE
 
 MIT
-
