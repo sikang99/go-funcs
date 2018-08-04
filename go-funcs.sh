@@ -1,12 +1,10 @@
-#!/bin/bash
-
-# source ./go-funcs.sh
-
+#---------------------------------------------------------------------
+# Utility functions
 #---------------------------------------------------------------------
 # direct directory jump
-function t() {
+function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: t [root|git|stoney|wasm|webcam|http]"
+		echo "usage: goto [root|git|stoney|wasm|webcam|http]"
 		return
 	fi
 	case $1 in
@@ -80,7 +78,7 @@ function goget() {
             option="$option $1" 
             ;;
         -n | --nocd)	
-            flag="nocd"
+            flag="nocd" 
             ;;
 		*) 	package=$1 ;;
 		esac
@@ -102,8 +100,31 @@ function gogl() {
     hub-search --lang=go $1
 }
 
+function goroot() {
+	if [ $# = 0 ]; then
+		echo "usage: goroot <go version>"
+		return
+	fi
+    case $1 in
+    *1.10*)
+        unlink $HOME/coding/go/root/go
+        ln -s $HOME/coding/go/root/go1.10.3 $HOME/coding/go/root/go
+        ;;
+    *1.11*)
+        unlink $HOME/coding/go/root/go
+        ln -s $HOME/coding/go/root/go1.11beta2 $HOME/coding/go/root/go
+        ;;
+    *)
+       echo "$1 is not installed"
+       return
+       ;;
+   esac
+   go version
+}
+
 # usage for internal functions
 function usage() {
+    goto
     goget
     gopath
     gogl
