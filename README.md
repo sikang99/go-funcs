@@ -55,6 +55,23 @@ $ goget https://github.com/sikang99/go-funcs
 $ gogl
 usage: gogl <search text>
 
+$ gogl wasm
+  sbinet/wasm
+  tools to interact with WASM files
+  2018-07-19T14:09:41Z  Go  162  65.25
+  https://github.com/sbinet/wasm
+
+  go-interpreter/wagon
+  wagon, a WebAssembly-based Go interpreter, for Go.
+  2018-08-04T08:55:25Z  Go  363  59.09
+  https://github.com/go-interpreter/wagon
+
+  ontio/ontology-wasm
+  Ontology wasm is a VM for ontology block chain, it can also be used for other stand-alone environment not only for block chains.
+  2018-07-30T08:13:26Z  Go  438  55.99
+  https://github.com/ontio/ontology-wasm
+...
+
 $ gogl "github search"
 ...
 ```
