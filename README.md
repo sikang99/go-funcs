@@ -54,6 +54,20 @@ $ gogl "github search"
 ...
 ```
 
+To select a go version installed, use `goroot` with version number such as 1.10, 1.11
+```
+$ goroot
+usage: goroot <version>
+
+$ goroot 1.10 # or 1.10.3, go1.10.3
+go version go1.10.3 linux/amd64
+
+$ goroot 1.11
+go version go1.11beta2 linux/amd64
+```
+
+
+
 ### Reference
 
 - [Advanced Bash-Scripting Guide](https://www.tldp.org/LDP/abs/html/index.html)
