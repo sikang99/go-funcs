@@ -5,6 +5,7 @@ Some utility shell script functions useful in the go development environment
 
 ## Installation
 
+To use shell functions, download and exec the shell script.
 
 ```sh
 $ go get github.com/sikang99/go-funcs
