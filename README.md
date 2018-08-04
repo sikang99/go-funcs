@@ -16,10 +16,11 @@ $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 To see help message of usage after installation, 
 ```
 $ usage
+usage: goto [.|..|root|path|stoney|wasm|webcam|http]
 usage: goget [<option>] <package path>
-usage: gopath <name>
+usage: gopath <package name>
 usage: gogl <search text>
-usage: goroot <go version>
+usage: gover <go version>
 ```
 
 To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
@@ -39,14 +40,13 @@ To change to the directory that you check the go sources downloaded, use `gopath
 `/vendor` and `/_` directories are excluded in search
 ```
 $ gopath
-usage: gopath <name>
+usage: gopath <package name>
 
 $ gopath go-funcs
 GOPATH/src/github.com/sikang99/go-funcs
 
 $ gopath github.com
 GOPATH/src/github.com
-
 ```
 
 To use `gogl`, install [sikang99/hub-search](https://github.com/sikang99/go-funcs).
@@ -77,7 +77,7 @@ $ gogl "github search"
 ```
 
 To select a specific go version installed in your environment, 
-use `goroot` with version number such as 1.10, 1.11
+use `gover` with version number such as 1,9, 1.10, 1.11
 Currently my case with two go versions is as following. 
 If your want to support more versions, plz edit the script. 
 ```
@@ -88,18 +88,17 @@ $HOME/root/go/..
 ├── go1.10.3
 └── go1.11beta2
 ```
-try to use `goroot`
+try to use `gover`
 ```
-$ goroot
-usage: goroot <version>
+$ gover
+usage: gover <go version>
 
-$ goroot 1.10 # or 1.10.3, go1.10.3
+$ gover 1.10 # or 1.10.3, go1.10.3
 go version go1.10.3 linux/amd64
 
-$ goroot 1.11
-go version go1.11beta2 linux/amd64
+$ gover 1.11
+go version go1.11beta3 linux/amd64
 ```
-
 
 
 ### Reference

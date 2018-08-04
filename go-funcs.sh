@@ -4,14 +4,18 @@
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: goto [root|git|stoney|wasm|webcam|http]"
+		echo "usage: goto [.|..|root|path|stoney|wasm|webcam|http]"
 		return
 	fi
 	case $1 in
+    .)
+        pushd . ;;
+    ..)
+        popd ;;
 	root)
 		cd `echo $GOROOT` ;;
-	git*)
-		cd `echo $GOPATH`/src/github.com ;;
+	path)
+		cd `echo $GOPATH`/src ;;
 	stoney)
 		cd `echo $GOPATH`/src/stoney ;;
 	wasm)
@@ -21,14 +25,14 @@ function goto() {
 	http*)
 		cd /home/stoney/coding/go/src/stoney/httpserver2/server ;;
 	*)
-		echo "$1 is unknown" ;;
+		echo "'$1' is unknown" ;;
 	esac
 }
 
 # fast file finder from HOME
-function f() {
+function gofile() {
 	if [ $# = 0 ]; then
-		echo "usage: f <name> $@"
+		echo "usage: gofile <filename>"
 		return
 	fi
 	find ~ -iname $1 -type f -print
@@ -37,7 +41,7 @@ function f() {
 # fast package finder from GOPATH
 function gopath() {
 	if [ $# = 0 ]; then
-		echo "usage: gopath <name>"
+		echo "usage: gopath <package name>"
 		return
 	fi
     list=$(eval find $GOPATH/src -iname $1 -type d -print)
@@ -73,7 +77,7 @@ function goget() {
 			package=${1#http*://} 
 			package=${package%.git} 
 			;;
-		http*://*)	
+        http*://*)	
 			#echo ${1#http*://} 
 			package=${1#http*://} 
 			;;
@@ -86,7 +90,7 @@ function goget() {
         -n | --nocd)	
             flag="nocd" 
             ;;
-		*) 	package=$1 ;;
+        *) 	package=$1 ;;
 		esac
 		shift
 	done
@@ -107,22 +111,26 @@ function gogl() {
 }
 
 # Select a go version to use among installed
-function goroot() {
+function gover() {
 	if [ $# = 0 ]; then
-		echo "usage: goroot <go version>"
+		echo "usage: gover <go version>"
 		return
 	fi
     case $1 in
+    *1.9*)
+        unlink $HOME/coding/go/root/go
+        ln -s $HOME/coding/go/root/go1.9.7 $HOME/coding/go/root/go
+        ;;
     *1.10*)
         unlink $HOME/coding/go/root/go
         ln -s $HOME/coding/go/root/go1.10.3 $HOME/coding/go/root/go
         ;;
     *1.11*)
         unlink $HOME/coding/go/root/go
-        ln -s $HOME/coding/go/root/go1.11beta2 $HOME/coding/go/root/go
+        ln -s $HOME/coding/go/root/go1.11beta3 $HOME/coding/go/root/go
         ;;
     *)
-       echo "$1 is not installed. select 1.10 or 1.11"
+       echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
        return
        ;;
    esac
@@ -133,8 +141,8 @@ function goroot() {
 function usage() {
     goto
     goget
+    gofile
     gopath
+    gover
     gogl
-    goroot
 }
-
