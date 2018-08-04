@@ -19,6 +19,7 @@ $ usage
 usage: goget [<option>] <package path>
 usage: gopath <name>
 usage: gogl <search text>
+usage: goroot <go version>
 ```
 
 To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
