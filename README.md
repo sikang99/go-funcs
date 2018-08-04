@@ -23,6 +23,15 @@ usage: gogl <search text>
 usage: gover <go version>
 ```
 
+To change a specific directory, use `goto`.
+```
+$ goto
+usage: goto [.|..|root|path|stoney|wasm|webcam|http]
+
+$ goto . # save the current directory
+$ goto .. # return to the saved directory
+```
+
 To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
 ```
 $ goget
@@ -86,7 +95,7 @@ $HOME/root/go/..
 ├── bak
 ├── go -> go1.11beta2
 ├── go1.10.3
-└── go1.11beta2
+└── go1.11beta3
 ```
 try to use `gover`
 ```
