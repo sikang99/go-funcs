@@ -125,7 +125,7 @@ function gover() {
         unlink $HOME/coding/go/root/go
         ln -s $HOME/coding/go/root/go1.10.3 $HOME/coding/go/root/go
         ;;
-    *1.11*)
+    *1.11* | latest)
         unlink $HOME/coding/go/root/go
         ln -s $HOME/coding/go/root/go1.11beta3 $HOME/coding/go/root/go
         ;;
