@@ -156,6 +156,7 @@ function gover() {
 	fi
    popd > /dev/null
    go version
+   gocode
 }
 
 # usage for internal functions

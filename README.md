@@ -64,7 +64,7 @@ $ gopath github.com
 GOPATH/src/github.com
 ```
 
-To use `gohub`, install the package [sikang99/hub-search](https://github.com/sikang99/go-funcs).
+To use `gohub`, install the package [sikang99/hub-search](https://github.com/sikang99/hub-search).
 
 ```sh
 $ goget https://github.com/sikang99/go-funcs
@@ -105,6 +105,11 @@ $HOME/root/go/..
 ├── go1.9.7
 ├── go1.10.3
 └── go1.11beta3
+```
+
+Before using, check `gocode` and install it if not exist.
+```
+$ go get -u github.com/nsf/gocode
 ```
 
 Let's try to use `gover`.
