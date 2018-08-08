@@ -29,7 +29,7 @@ run r:
 	./$(SCRIPT)
 
 cp:
-	cp ~/.bashrc bashrc
+	cp ~/.bashrc go-funcs.sh
 
 # ---------------------------------------------------------------------------
 git g:
@@ -39,7 +39,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "Update functions"
+	git commit -m "rename gogl for hub-search into gohub"
 	#git commit -m "add goroot function changing go version to use"
 	#git push -u https://sikang99:----@github.com/sikang99/go-funcs
 	git push

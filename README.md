@@ -22,7 +22,7 @@ $ usage
 usage: goto [.|..|root|path|stoney|wasm|webcam|http]
 usage: goget [<option>] <package path>
 usage: gopath <package name>
-usage: gogl <search text>
+usage: gohub <search text>
 usage: gover <go version>
 ```
 
@@ -64,14 +64,14 @@ $ gopath github.com
 GOPATH/src/github.com
 ```
 
-To use `gogl`, install the package [sikang99/hub-search](https://github.com/sikang99/go-funcs).
+To use `gohub`, install the package [sikang99/hub-search](https://github.com/sikang99/go-funcs).
 
 ```sh
 $ goget https://github.com/sikang99/go-funcs
-$ gogl
-usage: gogl <search text>
+$ gohub
+usage: gohub <search text>
 
-$ gogl wasm
+$ gohub wasm
   sbinet/wasm
   tools to interact with WASM files
   2018-07-19T14:09:41Z  Go  162  65.25
@@ -88,7 +88,7 @@ $ gogl wasm
   https://github.com/ontio/ontology-wasm
 ...
 
-$ gogl "github search"
+$ gohub "github search"
 ...
 ```
 

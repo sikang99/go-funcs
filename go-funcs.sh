@@ -1,4 +1,3 @@
-
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
 #---------------------------------------------------------------------
@@ -20,15 +19,15 @@ function goto() {
 	stoney)
 		cd `echo $GOPATH`/src/stoney ;;
 	wasm)
-		cd /home/stoney/coding/c/src/start-wasm ;;
+		cd $HOME/coding/c/src/start-wasm ;;
 	webcam)
-		cd /home/stoney/coding/go/src/github.com/blackjack/webcam ;;
+		cd $HOME/coding/go/src/github.com/blackjack/webcam ;;
 	sikang*)
-		cd /home/stoney/coding/go/src/github.com/sikang99 ;;
+		cd $HOME/coding/go/src/github.com/sikang99 ;;
 	http*)
-		cd /home/stoney/coding/go/src/stoney/httpserver2/server ;;
+		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
 	opencv*)
-		cd /home/stoney/coding/c/src/opencv ;;
+		cd $HOME/coding/c/src/opencv ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -107,9 +106,9 @@ function goget() {
 }
 
 # search repos of github.com with the given text
-function gogl() {
+function gohub() {
 	if [ $# = 0 ]; then
-		echo "usage: gogl <search text>"
+		echo "usage: gohub <search text>"
 		return
 	fi
     hub-search --lang=go $1
@@ -123,7 +122,7 @@ function gover() {
         ln -s go1.10.3 go
     fi
 	if [ $# = 0 ]; then
-        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta)"
+        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
     else
         case $1 in
         *1.9*)
@@ -166,7 +165,6 @@ function usage() {
     gofile
     gopath
     gover
-    gogl
+    gohub
 }
-
 
