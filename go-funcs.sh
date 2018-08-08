@@ -1,3 +1,4 @@
+
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
 #---------------------------------------------------------------------
@@ -13,7 +14,7 @@ function goto() {
     ..)
         popd ;;
 	root)
-		cd `echo $GOROOT` ;;
+		cd `echo $GOROOT/..` ;;
 	path)
 		cd `echo $GOPATH`/src ;;
 	stoney)
@@ -22,8 +23,12 @@ function goto() {
 		cd /home/stoney/coding/c/src/start-wasm ;;
 	webcam)
 		cd /home/stoney/coding/go/src/github.com/blackjack/webcam ;;
+	sikang*)
+		cd /home/stoney/coding/go/src/github.com/sikang99 ;;
 	http*)
 		cd /home/stoney/coding/go/src/stoney/httpserver2/server ;;
+	opencv*)
+		cd /home/stoney/coding/c/src/opencv ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -84,11 +89,11 @@ function goget() {
         *.git) 
             package=${1%.git} 
             ;;
-        -u | -v)	
-            option="$option $1" 
-            ;;
         -n | --nocd)	
             flag="nocd" 
+            ;;
+        -*)	
+            option="$option $1" 
             ;;
         *) 	package=$1 ;;
 		esac
@@ -112,28 +117,45 @@ function gogl() {
 
 # Select a go version to use among installed
 function gover() {
+    pushd . > /dev/null
+    cd $HOME/coding/go/root
+    if [ ! -L "go" ]; then 
+        ln -s go1.10.3 go
+    fi
 	if [ $# = 0 ]; then
-		echo "usage: gover <go version>"
-		return
+        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta)"
+    else
+        case $1 in
+        *1.9*)
+            if [ -d "go1.9.7" ]; then
+                unlink go
+                ln -s go1.9.7 go
+            fi
+            ;;
+        *1.10* | stable)
+            if [ -d "go1.10.3" ]; then
+                unlink go
+                ln -s go1.10.3 go
+            fi
+            ;;
+        *1.11* | latest | beta3)
+            if [ -d "go1.11beta3" ]; then
+                unlink go
+                ln -s go1.11beta3 go
+            fi
+            ;;
+        beta2)
+            if [ -d "go1.11beta2" ]; then
+                unlink go
+                ln -s go1.11beta2 go
+            fi
+            ;;
+        *)
+            echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
+            ;;
+        esac
 	fi
-    case $1 in
-    *1.9*)
-        unlink $HOME/coding/go/root/go
-        ln -s $HOME/coding/go/root/go1.9.7 $HOME/coding/go/root/go
-        ;;
-    *1.10*)
-        unlink $HOME/coding/go/root/go
-        ln -s $HOME/coding/go/root/go1.10.3 $HOME/coding/go/root/go
-        ;;
-    *1.11* | latest)
-        unlink $HOME/coding/go/root/go
-        ln -s $HOME/coding/go/root/go1.11beta3 $HOME/coding/go/root/go
-        ;;
-    *)
-       echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
-       return
-       ;;
-   esac
+   popd > /dev/null
    go version
 }
 
@@ -146,3 +168,5 @@ function usage() {
     gover
     gogl
 }
+
+
