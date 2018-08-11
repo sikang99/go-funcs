@@ -4,7 +4,7 @@
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: goto [.|..|root|path|stoney|wasm|webcam|http]"
+		echo "usage: goto [.|..|root|path|stoney|wasm|webcam|http|dart]"
 		return
 	fi
 	case $1 in
@@ -28,6 +28,8 @@ function goto() {
 		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
 	opencv*)
 		cd $HOME/coding/c/src/opencv ;;
+	dart*)
+		cd $HOME/coding/dart/src ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -105,15 +107,6 @@ function goget() {
     fi
 }
 
-# search repos of github.com with the given text
-function gohub() {
-	if [ $# = 0 ]; then
-		echo "usage: gohub <search text>"
-		return
-	fi
-    hub-search --lang=go $1
-}
-
 # Select a go version to use among installed
 function gover() {
     pushd . > /dev/null
@@ -121,7 +114,7 @@ function gover() {
     if [ ! -L "go" ]; then 
         ln -s go1.10.3 go
     fi
-	if [ $# = 0 ]; then
+	if [ $# -eq 0 ]; then
         echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
     else
         case $1 in
@@ -159,6 +152,41 @@ function gover() {
    gocode
 }
 
+# search repos of github.com with the given text
+function gohub() {
+	if [ $# = 0 ]; then
+		echo "usage: gohub <search text>"
+		return
+	fi
+    hub-search --lang=go $@
+}
+
+# github.com cloning
+function gclone() {
+	if [ $# = 0 ]; then
+		echo "usage: gclone <package folder> on github, gitlab"
+		return
+	fi
+    package=""
+    case $1 in
+    https://github.com/*)
+	    package=${1#https://github.com/} 
+        ;;
+    https://gitlab.com/*)
+	    package=${1#https://gitlab.com/} 
+        ;;
+    *)
+        package=$1
+        ;;
+    esac
+	if [ "$package" = "" ]; then
+        echo "$package"
+        return
+    fi
+    result=$(git clone https://github.com/$package $package)
+    cd $package
+}
+
 # usage for internal functions
 function usage() {
     goto
@@ -167,5 +195,6 @@ function usage() {
     gopath
     gover
     gohub
+    gclone
 }
 
