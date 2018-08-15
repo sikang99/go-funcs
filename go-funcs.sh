@@ -1,10 +1,11 @@
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
+# https://www.tldp.org/LDP/abs/html/string-manipulation.html
 #---------------------------------------------------------------------
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: goto [.|..|root|path|stoney|wasm|webcam|http|dart]"
+		echo "usage: goto [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]"
 		return
 	fi
 	case $1 in
@@ -12,9 +13,11 @@ function goto() {
         pushd . ;;
     ..)
         popd ;;
-	root)
+	root | go)
 		cd `echo $GOROOT/..` ;;
-	path)
+	bin | gobin)
+		cd `echo $GOPATH`/bin ;;
+	src | gosrc)
 		cd `echo $GOPATH`/src ;;
 	stoney)
 		cd `echo $GOPATH`/src/stoney ;;
@@ -26,10 +29,16 @@ function goto() {
 		cd $HOME/coding/go/src/github.com/sikang99 ;;
 	http*)
 		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
-	opencv*)
+	opencv* | ocv)
 		cd $HOME/coding/c/src/opencv ;;
 	dart*)
 		cd $HOME/coding/dart/src ;;
+	rust | rs)
+		cd $HOME/coding/rs/src ;;
+	javascript | js)
+		cd $HOME/coding/js/src ;;
+	c | cpp)
+		cd $HOME/coding/c/src ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -41,6 +50,7 @@ function gofile() {
 		echo "usage: gofile <filename>"
 		return
 	fi
+    # case insensitive search
 	find ~ -iname $1 -type f -print
 }
 
@@ -103,87 +113,117 @@ function goget() {
 	echo "> go get $option $package"
 	go get $option $package
     if [ "$flag" = "" ]; then
+        #pushd .
         cd $GOPATH/src/${package%/...}
     fi
 }
 
 # Select a go version to use among installed
 function gover() {
+	if [ $# -eq 0 ]; then
+        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
+        return
+    fi
+
     pushd . > /dev/null
     cd $HOME/coding/go/root
     if [ ! -L "go" ]; then 
         ln -s go1.10.3 go
     fi
-	if [ $# -eq 0 ]; then
-        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
-    else
-        case $1 in
-        *1.9*)
-            if [ -d "go1.9.7" ]; then
-                unlink go
-                ln -s go1.9.7 go
-            fi
-            ;;
-        *1.10* | stable)
-            if [ -d "go1.10.3" ]; then
-                unlink go
-                ln -s go1.10.3 go
-            fi
-            ;;
-        *1.11* | latest | beta3)
-            if [ -d "go1.11beta3" ]; then
-                unlink go
-                ln -s go1.11beta3 go
-            fi
-            ;;
-        beta2)
-            if [ -d "go1.11beta2" ]; then
-                unlink go
-                ln -s go1.11beta2 go
-            fi
-            ;;
-        *)
-            echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
-            ;;
-        esac
-	fi
-   popd > /dev/null
-   go version
-   gocode
+
+    case $1 in
+    *1.9*)
+        if [ -d "go1.9.7" ]; then
+            unlink go
+            ln -s go1.9.7 go
+        fi
+        ;;
+    *1.10* | stable)
+        if [ -d "go1.10.3" ]; then
+            unlink go
+            ln -s go1.10.3 go
+        fi
+        ;;
+    *1.11* | latest | beta3)
+        if [ -d "go1.11beta3" ]; then
+            unlink go
+            ln -s go1.11beta3 go
+        fi
+        ;;
+    beta2)
+        if [ -d "go1.11beta2" ]; then
+            unlink go
+            ln -s go1.11beta2 go
+        fi
+        ;;
+    current | .) 
+        #go version
+        ;;
+    *)
+        echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
+        ;;
+    esac
+
+    popd > /dev/null
+    go version
+    gocode
 }
 
 # search repos of github.com with the given text
 function gohub() {
 	if [ $# = 0 ]; then
-		echo "usage: gohub <search text>"
+		echo "usage: gohub <search text> written golng in github.com"
 		return
 	fi
     hub-search --lang=go $@
 }
 
+# show web url for current directory
+function gopage() {
+	if [ $# = 0 ]; then
+		echo "usage: gopage <.|url|github repo path>"
+		return
+	fi
+    case $1 in
+    . | current)
+        dir=`pwd`
+        package=${dir#$GOPATH/src/}
+        page=https://$package
+        #echo $dir $package $page
+        xdg-open $page
+        ;;
+    http*)
+        xdg-open $1
+        ;;
+    *)
+        xdg-open https://github.com/$1
+        ;;
+    esac
+}
+
 # github.com cloning
 function gclone() {
 	if [ $# = 0 ]; then
-		echo "usage: gclone <package folder> on github, gitlab"
+		echo "usage: gclone <package folder> on {github,gitlab}.com"
 		return
 	fi
     package=""
     case $1 in
     https://github.com/*)
-	    package=${1#https://github.com/} 
+        site=https://github.com/
+	    package=${1#$site} 
         ;;
     https://gitlab.com/*)
-	    package=${1#https://gitlab.com/} 
+        site=https://gitlab.com/
+	    package=${1#$site}
         ;;
-    *)
+    *)  # default on github.com
+        site=https://github.com/
         package=$1
         ;;
     esac
-	if [ "$package" = "" ]; then
-        echo "$package"
-        return
-    fi
-    result=$(git clone https://github.com/$package $package)
+    result=$(git clone $site/$package $package)
+    #pushd .
     cd $package
 }
 
@@ -195,6 +235,7 @@ function usage() {
     gopath
     gover
     gohub
+    gopwd
     gclone
 }
 
