@@ -41,8 +41,10 @@ git g:
 git-update gu:
 	git add README.md Makefile go-funcs.sh
 	git commit -m "modify goget()"
-	git config credential.helper store
 	git push
+
+git-login gl:
+	git config credential.helper store
 
 git-status gs:
 	git status
