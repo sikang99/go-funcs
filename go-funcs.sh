@@ -82,7 +82,7 @@ function gopath() {
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
 function goget() {
 	if [ $# = 0 ]; then
-		echo "usage: goget [<option>] <package path>"
+		echo "usage: goget [<option>] <package>"
 		return
 	fi
 	package=""
@@ -101,11 +101,12 @@ function goget() {
         *.git) 
             package=${1%.git} 
             ;;
-        -n | --nocd)	
-            flag="nocd" 
-            ;;
-        -*)	
-            option="$1 $option" 
+        -?)	
+            if [ "$option" = "" ]; then
+                option="$1"
+            else
+                option="$option $1"
+            fi
             ;;
         *) 	package=$1 
             ;;
@@ -113,8 +114,8 @@ function goget() {
 		shift
 	done
 	echo "> go get $option $package"
-	go get $option $package
-    if [ "$flag" = "" ]; then
+    go get $option $package
+    if [ $? = 0 ]; then
         cd $GOPATH/src/${package%/...}
     fi
 }
