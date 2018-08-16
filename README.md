@@ -24,6 +24,8 @@ usage: goget [<option>] <package path>
 usage: gopath <package name>
 usage: gohub <search text>
 usage: gover <go version>
+usage: gclone <package repo>
+usage: gopage [.|<package repo>]
 ```
 
 To change a specific directory, use `goto`.
@@ -123,6 +125,17 @@ go version go1.10.3 linux/amd64
 
 $ gover 1.11
 go version go1.11beta3 linux/amd64
+```
+
+##### gopage
+
+To open web page corresonding to the current source directory, `gopage .`.
+```
+$ pwd
+$GOPATH/src/github.com/sikang99/go-funcs
+
+$ gopage .
+https://github.com/sikang99/go-funcs
 ```
 
 
