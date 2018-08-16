@@ -198,11 +198,8 @@ function gopage() {
         echo $1
         xdg-open $1
         ;;
-    test)
-        page=$(get_repo)
-        echo $page
-        ;;
     *)
+        echo "https://github.com/$page"
         xdg-open https://github.com/$1
         ;;
     esac
@@ -242,7 +239,7 @@ function usage() {
     gopath
     gover
     gohub
-    gopwd
+    gopage
     gclone
 }
 
