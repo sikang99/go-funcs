@@ -39,7 +39,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "add a new function of gclone"
+	git commit -m "add a new function of gopage to jump its web page"
 	#git commit -m "add goroot function changing go version to use"
 	#git push -u https://sikang99:----@github.com/sikang99/go-funcs
 	git push

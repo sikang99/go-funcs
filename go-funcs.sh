@@ -178,7 +178,7 @@ function gohub() {
     hub-search --lang=go $@
 }
 
-# show web url for current directory
+# show web page for the current directory
 function gopage() {
 	if [ $# = 0 ]; then
 		echo "usage: gopage <.|url|github repo path>"
@@ -187,13 +187,20 @@ function gopage() {
     case $1 in
     . | current)
         dir=`pwd`
-        package=${dir#$GOPATH/src/}
-        page=https://$package
-        #echo $dir $package $page
-        xdg-open $page
+        package=${dir#*/src/}
+        IFS='/' array=($package)
+        page=${array[0]}/${array[1]}/${array[2]}
+        IFS=''
+        echo "https://$page"
+        xdg-open https://$page
         ;;
     http*)
+        echo $1
         xdg-open $1
+        ;;
+    test)
+        page=$(get_repo)
+        echo $page
         ;;
     *)
         xdg-open https://github.com/$1
