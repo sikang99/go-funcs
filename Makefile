@@ -40,7 +40,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "add a new function of gopage to jump its web page"
+	git commit -m "modify goget()"
 	git config credential.helper store
 	git push
 
