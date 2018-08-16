@@ -145,6 +145,7 @@ https://github.com/sikang99/go-funcs
 To clone the repo like as its web path, use `gclone` as following.
 ```
 $ gclone https://github.com/yurydelendik/wasmtext
+git clone https://github.com/yurydelendik/wasmtext
 ...
 $ pwd
 .../src/github.com/yurydelendik/wasmtext
