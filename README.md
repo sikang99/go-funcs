@@ -19,13 +19,14 @@ To see help message of usage after installation,
 
 ```sh
 $ usage
-usage: goto [.|..|root|path|stoney|wasm|webcam|http]
+usage: goto [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]
 usage: goget [<option>] <package path>
+usage: gofile <filename>
 usage: gopath <package name>
-usage: gohub <search text>
-usage: gover <go version>
-usage: gclone <package repo>
-usage: gopage [.|<package repo>]
+usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)
+usage: gohub <search text> written golng in github.com
+usage: gopage <.|url|github repo path>
+usage: gclone <package folder> on {github,gitlab}.com
 ```
 
 ### goto
