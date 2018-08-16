@@ -132,13 +132,23 @@ go version go1.11beta3 linux/amd64
 ```
 
 ### gopage
-To open web page corresonding to the current source directory, `gopage .`.
+To open a web page corresponding to the current source directory, type `gopage .`.
 ```
 $ pwd
 $GOPATH/src/github.com/sikang99/go-funcs
 
 $ gopage .
 https://github.com/sikang99/go-funcs
+```
+
+### gclone
+To clone the repo like as its web path, use `gclone` as following.
+```
+$ gclone https://github.com/yurydelendik/wasmtext
+...
+$ pwd
+.../src/github.com/yurydelendik/wasmtext
+
 ```
 
 
