@@ -1,4 +1,4 @@
-## Go-Funcs
+# Go-Funcs
 
 Some utility shell script functions useful in the go development environment
 
@@ -13,7 +13,7 @@ $ cd $GOPATH/src/github.com/sikang99/go-funcs
 $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 ```
 
-### Usage
+## Usage
 
 To see help message of usage after installation, 
 
@@ -28,6 +28,7 @@ usage: gclone <package repo>
 usage: gopage [.|<package repo>]
 ```
 
+### goto
 To change a specific directory, use `goto`.
 
 ```sh
@@ -38,6 +39,7 @@ $ goto . # save the current directory
 $ goto .. # return to the saved directory
 ```
 
+### goget
 To download go sources from open repos, use `goget` regardless of includng http scheme or .git tail.
 
 ```sh
@@ -66,6 +68,7 @@ $ gopath github.com
 GOPATH/src/github.com
 ```
 
+### gohub
 To use `gohub`, install the package [sikang99/hub-search](https://github.com/sikang99/hub-search).
 
 ```sh
@@ -94,6 +97,7 @@ $ gohub "github search"
 ...
 ```
 
+### gover
 To select a specific go version installed in your environment, 
 use `gover` with version number such as 1,9, 1.10, 1.11
 Currently my case with two go versions is as following. 
@@ -127,8 +131,7 @@ $ gover 1.11
 go version go1.11beta3 linux/amd64
 ```
 
-##### gopage
-
+### gopage
 To open web page corresonding to the current source directory, `gopage .`.
 ```
 $ pwd
@@ -139,10 +142,10 @@ https://github.com/sikang99/go-funcs
 ```
 
 
-### Reference
+## Reference
 
 - [Advanced Bash-Scripting Guide](https://www.tldp.org/LDP/abs/html/index.html)
 
-### LICENSE
+## LICENSE
 
 MIT
