@@ -1,3 +1,4 @@
+#!/bin/bash
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
@@ -104,16 +105,16 @@ function goget() {
             flag="nocd" 
             ;;
         -*)	
-            option="$option $1" 
+            option="$1 $option" 
             ;;
-        *) 	package=$1 ;;
+        *) 	package=$1 
+            ;;
 		esac
 		shift
 	done
 	echo "> go get $option $package"
 	go get $option $package
     if [ "$flag" = "" ]; then
-        #pushd .
         cd $GOPATH/src/${package%/...}
     fi
 }
@@ -192,15 +193,15 @@ function gopage() {
         page=${array[0]}/${array[1]}/${array[2]}
         IFS=''
         echo "https://$page"
-        xdg-open https://$page
+        xdg-open https://$page >/dev/null
         ;;
     http*)
         echo $1
-        xdg-open $1
+        xdg-open $1 >/dev/null
         ;;
     *)
         echo "https://github.com/$page"
-        xdg-open https://github.com/$1
+        xdg-open https://github.com/$1 >/dev/null
         ;;
     esac
 }
@@ -211,23 +212,16 @@ function gclone() {
 		echo "usage: gclone <package folder> on {github,gitlab}.com"
 		return
 	fi
-    package=""
     case $1 in
-    https://github.com/*)
-        site=https://github.com/
-	    package=${1#$site} 
-        ;;
-    https://gitlab.com/*)
-        site=https://gitlab.com/
-	    package=${1#$site}
+    http*://*)
+	    package=${1#http*://} 
         ;;
     *)  # default on github.com
-        site=https://github.com/
-        package=$1
+        echo "$1 is not a url to git"
+        return
         ;;
     esac
-    result=$(git clone $site/$package $package)
-    #pushd .
+    result=$(git clone $1 $package)
     cd $package
 }
 
