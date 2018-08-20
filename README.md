@@ -156,6 +156,7 @@ $ pwd
 
 ## Reference
 
+- [Bash 입문자를 위한 핵심 요약 정리 (Shell Script)](https://blog.gaerae.com/2015/01/bash-hello-world.html)
 - [Advanced Bash-Scripting Guide](https://www.tldp.org/LDP/abs/html/index.html)
 
 ## LICENSE
