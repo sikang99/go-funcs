@@ -40,7 +40,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "modify goget()"
+	git commit -m "modify to use FUNCNAME"
 	git push
 
 git-login gl:

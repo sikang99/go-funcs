@@ -6,7 +6,7 @@
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: goto [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]"
+		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]"
 		return
 	fi
 	case $1 in
@@ -36,10 +36,14 @@ function goto() {
 		cd $HOME/coding/dart/src ;;
 	rust | rs)
 		cd $HOME/coding/rs/src ;;
+	python | py)
+		cd $HOME/coding/py/src ;;
 	javascript | js)
 		cd $HOME/coding/js/src ;;
 	c | cpp)
 		cd $HOME/coding/c/src ;;
+	media)
+		cd $HOME/coding/media ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -48,7 +52,7 @@ function goto() {
 # fast file finder from HOME
 function gofile() {
 	if [ $# = 0 ]; then
-		echo "usage: gofile <filename>"
+		echo "usage: $FUNCNAME <filename>"
 		return
 	fi
     # case insensitive search
@@ -58,7 +62,7 @@ function gofile() {
 # fast package finder from GOPATH
 function gopath() {
 	if [ $# = 0 ]; then
-		echo "usage: gopath <package name>"
+		echo "usage: $FUNCNAME <package name>"
 		return
 	fi
     list=$(eval find $GOPATH/src -iname $1 -type d -print)
@@ -75,14 +79,14 @@ function gopath() {
             return
         fi
     done
-    echo "> package '$1' not found in $GOPATH/src"
+    echo "> $FUNCNAME: '$1' not found in $GOPATH/src"
 }
 
 # go get a package and goto its directory
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
 function goget() {
 	if [ $# = 0 ]; then
-		echo "usage: goget [<option>] <package>"
+		echo "usage: $FUNCNAME [<option>] <package>"
 		return
 	fi
 	package=""
@@ -113,17 +117,18 @@ function goget() {
 		esac
 		shift
 	done
-	echo "> go get $option $package"
+	echo "go get $option $package"
     go get $option $package
-    if [ $? = 0 ]; then
-        cd $GOPATH/src/${package%/...}
-    fi
+    #if [ $? = 0 ]; then
+    #    cd $GOPATH/src/${package%/...}
+    #fi
+    cd $GOPATH/src/${package%/...}
 }
 
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
+        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
         return
     fi
 
@@ -141,12 +146,21 @@ function gover() {
         fi
         ;;
     *1.10* | stable)
+        #GOcACHE={on|off}
         if [ -d "go1.10.3" ]; then
             unlink go
             ln -s go1.10.3 go
         fi
         ;;
-    *1.11* | latest | beta3)
+    *1.11* | latest | rc1)
+        #GO111MODULE={auto|on|off}
+        export GO111MODULE=on
+        if [ -d "go1.11rc1" ]; then
+            unlink go
+            ln -s go1.11rc1 go
+        fi
+        ;;
+    beta3)
         if [ -d "go1.11beta3" ]; then
             unlink go
             ln -s go1.11beta3 go
@@ -183,7 +197,7 @@ function gohub() {
 # show web page for the current directory
 function gopage() {
 	if [ $# = 0 ]; then
-		echo "usage: gopage <.|url|github repo path>"
+		echo "usage: $FUNCNAME <.|url|github repo path>"
 		return
 	fi
     case $1 in
@@ -210,7 +224,7 @@ function gopage() {
 # github.com cloning
 function gclone() {
 	if [ $# = 0 ]; then
-		echo "usage: gclone <package folder> on {github,gitlab}.com"
+		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
 		return
 	fi
     case $1 in
