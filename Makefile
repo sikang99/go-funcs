@@ -40,7 +40,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "modify to use FUNCNAME"
+	git commit -m "add get() for go, py, js, rs, dart packages"
 	git push
 
 git-login gl:

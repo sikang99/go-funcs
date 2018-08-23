@@ -1,3 +1,5 @@
+export DOWNLOAD=$HOME/다운로드
+
 #!/bin/bash
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
@@ -44,6 +46,8 @@ function goto() {
 		cd $HOME/coding/c/src ;;
 	media)
 		cd $HOME/coding/media ;;
+	p2p*)
+		cd $HOME/coding/js/src/github.com/P2PSP ;;
 	*)
 		echo "'$1' is unknown" ;;
 	esac
@@ -202,10 +206,10 @@ function gopage() {
 	fi
     case $1 in
     . | current)
-        dir=`pwd`
-        package=${dir#*/src/}
+        local dir=`pwd`
+        local package=${dir#*/src/}
         IFS='/' array=($package)
-        page=${array[0]}/${array[1]}/${array[2]}
+        local page=${array[0]}/${array[1]}/${array[2]}
         IFS=''
         echo "https://$page"
         xdg-open https://$page >/dev/null
@@ -229,7 +233,7 @@ function gclone() {
 	fi
     case $1 in
     http*://*)
-	    package=${1#http*://} 
+	    local package=${1#http*://} 
         ;;
     *)  # default on github.com
         echo "$1 is not a url to git"
@@ -237,7 +241,34 @@ function gclone() {
         ;;
     esac
     result=$(git clone $1 $package)
+    package=${package%.git} 
     cd $package
+}
+
+function get() {
+	if [ $# -lt 2 ]; then
+		echo "usage: $FUNCNAME [<language> <url of package>]"
+		return
+	fi
+    case $1 in 
+    go | golang)
+        cd $HOME/coding/go/src ;;
+    py | python)
+        cd $HOME/coding/py/src ;;
+    rs | rust)
+        cd $HOME/coding/rs/src ;;
+    js | javascript)
+        cd $HOME/coding/js/src ;;
+    c | cpp)
+        cd $HOME/coding/c/src ;;
+    dart)
+        cd $HOME/coding/dart/src ;;
+    *) 
+        echo "> $1 is unknown language type"
+        return
+        ;;
+    esac
+    gclone $2
 }
 
 # usage for internal functions
