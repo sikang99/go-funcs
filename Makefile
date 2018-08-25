@@ -1,4 +1,6 @@
-# Makefile for
+#
+# Makefile by Stoney
+#
 all: usage
 
 SCRIPT=go-funcs.sh
@@ -35,7 +37,7 @@ cp:
 # ---------------------------------------------------------------------------
 git g:
 	@echo ""
-	@echo "make (git) [update|status]"
+	@echo "make (git) [update|login|status]"
 	@echo ""
 
 git-update gu:
