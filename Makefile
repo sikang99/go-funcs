@@ -41,6 +41,7 @@ git g:
 	@echo ""
 
 git-update gu:
+	git tag v1.0.0
 	git add README.md Makefile go-funcs.sh
 	git commit -m "add get() for go, py, js, rs, dart packages"
 	git push
