@@ -37,17 +37,19 @@ cp:
 # ---------------------------------------------------------------------------
 git g:
 	@echo ""
-	@echo "make (git) [update|login|status]"
+	@echo "make (git) [update|login|tag|status]"
 	@echo ""
 
 git-update gu:
-	git tag v1.0.0
 	git add README.md Makefile go-funcs.sh
 	git commit -m "add get() for go, py, js, rs, dart packages"
-	git push
+	git push --tags
 
 git-login gl:
 	git config credential.helper store
+
+git-tag gt:
+	git tag v1.0.0
 
 git-status gs:
 	git status
