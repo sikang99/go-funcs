@@ -153,6 +153,13 @@ $ pwd
 
 ```
 
+### get
+Function for downloading git sources
+```
+$ get <py|go|rs|dt|js> <package repo>
+```
+
+
 
 ## Reference
 

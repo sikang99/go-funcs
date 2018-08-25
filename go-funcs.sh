@@ -1,5 +1,3 @@
-export DOWNLOAD=$HOME/다운로드
-
 #!/bin/bash
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
@@ -16,7 +14,7 @@ function goto() {
         pushd . ;;
     ..)
         popd ;;
-	root | go)
+    root) 
 		cd `echo $GOROOT/..` ;;
 	bin | gobin)
 		cd `echo $GOPATH`/bin ;;
@@ -34,22 +32,24 @@ function goto() {
 		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
 	opencv* | ocv)
 		cd $HOME/coding/c/src/opencv ;;
-	dart*)
-		cd $HOME/coding/dart/src ;;
+	golang | go)
+		cd $HOME/coding/go/src ;;
+	dart | dt)
+		cd $HOME/coding/dt/src ;;
 	rust | rs)
 		cd $HOME/coding/rs/src ;;
 	python | py)
 		cd $HOME/coding/py/src ;;
 	javascript | js)
 		cd $HOME/coding/js/src ;;
-	c | cpp)
+	cpp | c)
 		cd $HOME/coding/c/src ;;
 	media)
 		cd $HOME/coding/media ;;
 	p2p*)
 		cd $HOME/coding/js/src/github.com/P2PSP ;;
 	*)
-		echo "'$1' is unknown" ;;
+		echo "> '$1' is unknown" ;;
 	esac
 }
 
@@ -121,8 +121,13 @@ function goget() {
 		esac
 		shift
 	done
-	echo "go get $option $package"
-    go get $option $package
+    if [ "$option" = "" ]; then
+	    echo "go get $package"
+        go get $package
+    else 
+	    echo "go get $option $package"
+        go get $option $package
+    fi
     #if [ $? = 0 ]; then
     #    cd $GOPATH/src/${package%/...}
     #fi
@@ -139,11 +144,12 @@ function gover() {
     pushd . > /dev/null
     cd $HOME/coding/go/root
     if [ ! -L "go" ]; then 
-        ln -s go1.10.3 go
+        ln -s go1.10.4 go
     fi
 
     case $1 in
     *1.9*)
+        #CGO_ENABLED=0
         if [ -d "go1.9.7" ]; then
             unlink go
             ln -s go1.9.7 go
@@ -151,29 +157,17 @@ function gover() {
         ;;
     *1.10* | stable)
         #GOcACHE={on|off}
-        if [ -d "go1.10.3" ]; then
+        if [ -d "go1.10.4" ]; then
             unlink go
-            ln -s go1.10.3 go
+            ln -s go1.10.4 go
         fi
         ;;
-    *1.11* | latest | rc1)
+    *1.11* | latest)
         #GO111MODULE={auto|on|off}
         export GO111MODULE=on
-        if [ -d "go1.11rc1" ]; then
+        if [ -d "go1.11" ]; then
             unlink go
-            ln -s go1.11rc1 go
-        fi
-        ;;
-    beta3)
-        if [ -d "go1.11beta3" ]; then
-            unlink go
-            ln -s go1.11beta3 go
-        fi
-        ;;
-    beta2)
-        if [ -d "go1.11beta2" ]; then
-            unlink go
-            ln -s go1.11beta2 go
+            ln -s go1.11 go
         fi
         ;;
     current | .) 
@@ -225,7 +219,7 @@ function gopage() {
     esac
 }
 
-# github.com cloning
+# git cloning with various source types
 function gclone() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
@@ -236,15 +230,16 @@ function gclone() {
 	    local package=${1#http*://} 
         ;;
     *)  # default on github.com
-        echo "$1 is not a url to git"
+        echo "> $1 is not a url to git"
         return
         ;;
     esac
-    result=$(git clone $1 $package)
     package=${package%.git} 
+    result=$(git clone $1 $package)
     cd $package
 }
 
+# git clone by language type
 function get() {
 	if [ $# -lt 2 ]; then
 		echo "usage: $FUNCNAME [<language> <url of package>]"
@@ -259,19 +254,43 @@ function get() {
         cd $HOME/coding/rs/src ;;
     js | javascript)
         cd $HOME/coding/js/src ;;
+    dt | dart)
+        cd $HOME/coding/dt/src ;;
     c | cpp)
         cd $HOME/coding/c/src ;;
-    dart)
-        cd $HOME/coding/dart/src ;;
     *) 
-        echo "> $1 is unknown language type"
+        echo "> $1 is the unknown language type"
         return
         ;;
     esac
     gclone $2
 }
 
-# usage for internal functions
+# general web page open
+function open-page() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <URL>"
+		return
+    fi
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        xdg-open $1
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        open $1
+    else
+        echo $1
+    fi
+}
+
+# Open the docker page of repo
+function dopage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <docker image repo> on hub.docker.com"
+		return
+	fi
+    open-page https://hub.docker.com/r/$1
+}
+
+# usage for internal utility functions
 function usage() {
     goto
     goget
@@ -281,5 +300,8 @@ function usage() {
     gohub
     gopage
     gclone
+    get
+    open-page
+    dopage
 }
 
