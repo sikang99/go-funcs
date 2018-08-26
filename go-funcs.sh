@@ -121,6 +121,8 @@ function goget() {
 		esac
 		shift
 	done
+
+    export GO111MODULE=off
     if [ "$option" = "" ]; then
 	    echo "go get $package"
         go get $package
@@ -128,16 +130,14 @@ function goget() {
 	    echo "go get $option $package"
         go get $option $package
     fi
-    #if [ $? = 0 ]; then
-    #    cd $GOPATH/src/${package%/...}
-    #fi
     cd $GOPATH/src/${package%/...}
+    export GO111MODULE=on
 }
 
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)"
+        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(stable), 1.11(latest)"
         return
     fi
 
@@ -164,7 +164,6 @@ function gover() {
         ;;
     *1.11* | latest)
         #GO111MODULE={auto|on|off}
-        export GO111MODULE=on
         if [ -d "go1.11" ]; then
             unlink go
             ln -s go1.11 go
