@@ -100,9 +100,10 @@ function goget() {
 		return
 	fi
 
+    gopath=`go env GOPATH`
 	package=""
 	option=""
-    flag=""
+    #flag=""
 	while [ "$1" != "" ]; do
 		case $1 in
 		http*://*.git)	
@@ -137,7 +138,7 @@ function goget() {
 	    echo "go get $option $package"
         go get $option $package
     fi
-    cd $GOPATH/src/${package%/...}
+    cd $gopath/src/${package%/...}
     export GO111MODULE=on
 }
 
@@ -206,7 +207,7 @@ function gopage() {
 	fi
     case $1 in
     . | cwd)
-#        local dir=`pwd`
+        local dir=`pwd`
         local package=${dir#*/src/}
         IFS='/' array=($package)
         local page=${array[0]}/${array[1]}/${array[2]}
@@ -218,8 +219,11 @@ function gopage() {
         echo $1
         xdg-open $1 >/dev/null
         ;;
+    github.com*)
+        xdg-open https://$1 >/dev/null
+        ;;
     *)
-        echo "https://github.com/$page"
+        echo "https://github.com/$1"
         xdg-open https://github.com/$1 >/dev/null
         ;;
     esac
@@ -262,8 +266,8 @@ function get() {
         cd $HOME/coding/js/src ;;
     dt | dart)
         cd $HOME/coding/dt/src ;;
-    c | cpp)
-        cd $HOME/coding/c/src ;;
+    cc | cpp)
+        cd $HOME/coding/cc/src ;;
     *) 
         echo "> $1 is the unknown language type"
         return
@@ -310,3 +314,5 @@ function usage() {
     open-page
     dopage
 }
+
+[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
