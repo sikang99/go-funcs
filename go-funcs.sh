@@ -14,14 +14,20 @@ function goto() {
         pushd . ;;
     ..)
         popd ;;
+    path) 
+		cd $GOPATH ;;
     root) 
-		cd `echo $GOROOT/..` ;;
+		cd $GOPATH/root ;;
 	bin | gobin)
-		cd `echo $GOPATH`/bin ;;
+		cd $GOPATH/bin ;;
 	src | gosrc)
-		cd `echo $GOPATH`/src ;;
+		cd $GOPATH/src ;;
+	pkg | gopkg)
+		cd $GOPATH/pkg ;;
+	mod | gomod)
+		cd $GOPATH/pkg/mod ;;
 	stoney)
-		cd `echo $GOPATH`/src/stoney ;;
+		cd $GOPATH/src/stoney ;;
 	wasm)
 		cd $HOME/coding/c/src/start-wasm ;;
 	webcam)
@@ -93,6 +99,7 @@ function goget() {
 		echo "usage: $FUNCNAME [<option>] <package>"
 		return
 	fi
+
 	package=""
 	option=""
     flag=""
@@ -198,8 +205,8 @@ function gopage() {
 		return
 	fi
     case $1 in
-    . | current)
-        local dir=`pwd`
+    . | cwd)
+#        local dir=`pwd`
         local package=${dir#*/src/}
         IFS='/' array=($package)
         local page=${array[0]}/${array[1]}/${array[2]}
@@ -303,4 +310,3 @@ function usage() {
     open-page
     dopage
 }
-
