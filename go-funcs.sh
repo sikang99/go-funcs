@@ -100,7 +100,6 @@ function goget() {
 		return
 	fi
 
-    gopath=`go env GOPATH`
 	package=""
 	option=""
     #flag=""
@@ -138,7 +137,7 @@ function goget() {
 	    echo "go get $option $package"
         go get $option $package
     fi
-    cd $gopath/src/${package%/...}
+    cd $GOPATH/src/${package%/...}
     export GO111MODULE=on
 }
 
@@ -314,5 +313,5 @@ function usage() {
     open-page
     dopage
 }
-
-[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
+# CAUTION: don't use gvm as following
+#[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
