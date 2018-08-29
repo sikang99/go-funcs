@@ -161,7 +161,10 @@ $ get <py|go|rs|dt|js> <package repo>
 
 ### dopage
 Open the web page for the repo in the docker hub
-
+```
+$ dopage golang
+https://hub.docker.com/r/golang/
+```
 
 ## Reference
 
