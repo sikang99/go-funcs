@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "add get() for go, py, js, rs, dart packages"
+	git commit -m "add dopage() to open the web page for docker"
 	git push --tags
 
 git-login gl:
