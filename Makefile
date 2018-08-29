@@ -49,7 +49,7 @@ git-login gl:
 	git config credential.helper store
 
 git-tag gt:
-	git tag v1.0.1
+	git tag v1.0.2
 
 git-status gs:
 	git status

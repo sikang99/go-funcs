@@ -159,6 +159,9 @@ Function for downloading git sources
 $ get <py|go|rs|dt|js> <package repo>
 ```
 
+### dopage
+Open the web page for the repo in the docker hub
+
 
 ## Reference
 
