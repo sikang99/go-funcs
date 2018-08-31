@@ -154,7 +154,7 @@ $ pwd
 ```
 
 ### get
-Function for downloading git sources
+Function for downloading git sources of a package
 ```
 $ get <py|go|rs|dt|js> <package repo>
 ```
