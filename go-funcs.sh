@@ -6,7 +6,7 @@
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]"
+		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|wasm|webcam|http|go|rs|py|js|dt]"
 		return
 	fi
 	case $1 in
@@ -29,7 +29,7 @@ function goto() {
 	stoney)
 		cd $GOPATH/src/stoney ;;
 	wasm)
-		cd $HOME/coding/c/src/start-wasm ;;
+		cd $HOME/coding/cc/src/start-wasm ;;
 	webcam)
 		cd $HOME/coding/go/src/github.com/blackjack/webcam ;;
 	sikang*)
@@ -37,19 +37,21 @@ function goto() {
 	http*)
 		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
 	opencv* | ocv)
-		cd $HOME/coding/c/src/opencv ;;
-	golang | go)
+		cd $HOME/coding/cc/src/stoney/opencv ;;
+	openvino* | vino)
+		cd $HOME/coding/cc/src/stoney/openvino ;;
+	go | golang)
 		cd $HOME/coding/go/src ;;
-	dart | dt)
+	dt | dart)
 		cd $HOME/coding/dt/src ;;
-	rust | rs)
+	rs | rust)
 		cd $HOME/coding/rs/src ;;
-	python | py)
+	py | python)
 		cd $HOME/coding/py/src ;;
-	javascript | js)
+	js | javascript)
 		cd $HOME/coding/js/src ;;
-	cpp | c)
-		cd $HOME/coding/c/src ;;
+	cc | cpp)
+		cd $HOME/coding/cc/src ;;
 	media)
 		cd $HOME/coding/media ;;
 	p2p*)
@@ -171,6 +173,7 @@ function gover() {
         ;;
     *1.11* | latest)
         #GO111MODULE={auto|on|off}
+        #GOPROXY=file://home/stoney/coding/go/proxy
         if [ -d "go1.11" ]; then
             unlink go
             ln -s go1.11 go
