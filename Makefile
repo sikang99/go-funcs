@@ -42,14 +42,14 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go.mod go-funcs.sh
-	git commit -m "add dopage() to open the web page for docker"
+	git commit -m "add gomod() to set the GO111MODULE"
 	git push
 
 git-login gl:
 	git config credential.helper store
 
 git-tag gt:
-	git tag v1.0.2
+	git tag v1.0.3
 	git push --tags
 
 git-status gs:

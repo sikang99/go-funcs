@@ -205,8 +205,9 @@ function gomod() {
     auto) 
         export GO111MODULE=auto ;;
     *)
-        go env GO111MODULE ;;
+        echo "> $1 is an unknown mod type."
     esac
+    echo `env | grep GO111MODULE`
 }
 
 # search repos of github.com with the given text
