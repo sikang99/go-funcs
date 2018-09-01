@@ -192,10 +192,27 @@ function gover() {
     gocode
 }
 
+function gomod() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <auto|on|off> [`env | grep GO111MODULE`]"
+		return
+	fi
+    case $1 in
+    on) 
+        export GO111MODULE=on ;;
+    off) 
+        export GO111MODULE=off ;;
+    auto) 
+        export GO111MODULE=auto ;;
+    *)
+        go env GO111MODULE ;;
+    esac
+}
+
 # search repos of github.com with the given text
 function gohub() {
 	if [ $# = 0 ]; then
-		echo "usage: gohub <search text> written golng in github.com"
+		echo "usage: $FUNCNAME <search text> written golng in github.com"
 		return
 	fi
     hub-search --lang=go $@

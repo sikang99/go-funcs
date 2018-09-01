@@ -165,6 +165,15 @@ Open the web page for the repo in the docker hub
 $ dopage golang
 https://hub.docker.com/r/golang/
 ```
+### gomod
+This is for seting the environment variable of GO111MODULE.
+```
+$ gomod
+usage: gomod <auto|on|off> [GO111MODULE=auto]
+
+$ gomod on
+[GO111MODULE=on]
+```
 
 ## Reference
 
