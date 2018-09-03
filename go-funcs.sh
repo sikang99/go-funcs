@@ -192,6 +192,7 @@ function gover() {
     gocode
 }
 
+# set the value of GO111MODULE variable
 function gomod() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <auto|on|off> [`env | grep GO111MODULE`]"
@@ -204,10 +205,33 @@ function gomod() {
         export GO111MODULE=off ;;
     auto) 
         export GO111MODULE=auto ;;
+    init | vendor | verify)
+        go mod $1 ;;
     *)
         echo "> $1 is an unknown mod type."
     esac
-    echo `env | grep GO111MODULE`
+    echo `env | grep GO111MODULE` in `go version`
+}
+
+function gotrd() {
+    case $1 in
+    -h | --help)
+        echo "$FUNCNAME [<all|go|rs|js|py|dt|week|month>:go]" ;;
+    all)
+        hub-trend ;;
+    rs | rust)
+        hub-trend --lang=rust ;;
+    py | python)
+        hub-trend --lang=python ;;
+    js | javascript)
+        hub-trend --lang=javascript ;;
+    dt | dart)
+        hub-trend --lang=dart ;;
+    week | month)
+        hub-trend --lang=go --time=$1 ;;
+    go | *)
+        hub-trend --lang=go
+    esac
 }
 
 # search repos of github.com with the given text
@@ -333,6 +357,7 @@ function usage() {
     get
     open-page
     dopage
+    gomod
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"

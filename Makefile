@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go.mod go-funcs.sh
-	git commit -m "add gomod() to set the GO111MODULE"
+	git commit -m "add gotrd() to display trending in github.com"
 	git push
 
 git-login gl:
