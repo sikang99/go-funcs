@@ -176,12 +176,13 @@ $ gomod on
 ```
 
 ### gotrd
-Display go trending in github.com
+Display trending in github.com by using [sikang99/hub-trend](https://github.com/sikang99/hub-trend)
 ```
 $ gotrd -h
 gotrd [<all|go|rs|js|py|dt|week|month>:go]
 
 $ gotrd rs
+...
 ```
 
 ## Reference
