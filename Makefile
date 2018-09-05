@@ -42,14 +42,14 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go.mod go-funcs.sh
-	git commit -m "add gotrd() to display trending in github.com"
+	git commit -m "write dkr() to replace dopage()"
 	git push
 
 git-login gl:
 	git config credential.helper store
 
 git-tag gt:
-	git tag v1.0.3
+	git tag v1.0.4
 	git push --tags
 
 git-status gs:

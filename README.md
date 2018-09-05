@@ -159,11 +159,14 @@ Function for downloading git sources of a package
 $ get <py|go|rs|dt|js> <package repo>
 ```
 
-### dopage
-Open the web page for the repo in the docker hub
+### dkr
+Utility functions for docker
 ```
-$ dopage golang
+$ dkr page golang
 https://hub.docker.com/r/golang/
+
+$ dkr clean
+cleaning .... images
 ```
 ### gomod
 This is for seting the environment variable of GO111MODULE.

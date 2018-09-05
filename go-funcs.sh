@@ -6,7 +6,7 @@
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|wasm|webcam|http|go|rs|py|js|dt]"
+		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|webcam|http|go|rs|py|js|jv|dt|wa]"
 		return
 	fi
 	case $1 in
@@ -28,8 +28,6 @@ function goto() {
 		cd $GOPATH/pkg/mod ;;
 	stoney)
 		cd $GOPATH/src/stoney ;;
-	wasm)
-		cd $HOME/coding/cc/src/start-wasm ;;
 	webcam)
 		cd $HOME/coding/go/src/github.com/blackjack/webcam ;;
 	sikang*)
@@ -50,8 +48,14 @@ function goto() {
 		cd $HOME/coding/py/src ;;
 	js | javascript)
 		cd $HOME/coding/js/src ;;
+	jv | java)
+		cd $HOME/coding/jv/src ;;
 	cc | cpp)
 		cd $HOME/coding/cc/src ;;
+	hs | haskell)
+		cd $HOME/coding/hs/src ;;
+	wa | wasm)
+		cd $HOME/coding/wa/src ;;
 	media)
 		cd $HOME/coding/media ;;
 	p2p*)
@@ -195,30 +199,44 @@ function gover() {
 # set the value of GO111MODULE variable
 function gomod() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <auto|on|off> [`env | grep GO111MODULE`]"
+		echo "usage: $FUNCNAME <auto|on|off|init|vendor|verify|clean> [`env | grep GO111MODULE`]"
 		return
 	fi
     case $1 in
     on) 
-        export GO111MODULE=on ;;
+        export GO111MODULE=on
+        echo `env | grep GO111MODULE` in `go version` ;;
     off) 
-        export GO111MODULE=off ;;
+        export GO111MODULE=off
+        echo `env | grep GO111MODULE` in `go version` ;;
     auto) 
-        export GO111MODULE=auto ;;
+        export GO111MODULE=auto
+        echo `env | grep GO111MODULE` in `go version` ;;
     init | vendor | verify)
         go mod $1 ;;
+    build | install )
+        go $1 ;;
+    mod | edit)
+        vi go.mod ;;
+    sum)
+        vi go.mod ;;
+    clean)
+        rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
     *)
         echo "> $1 is an unknown mod type."
+        echo `env | grep GO111MODULE` in `go version` ;;
     esac
-    echo `env | grep GO111MODULE` in `go version`
 }
 
+# show github treading for the given language
 function gotrd() {
     case $1 in
     -h | --help)
-        echo "$FUNCNAME [<all|go|rs|js|py|dt|week|month>:go]" ;;
+        echo "usage: $FUNCNAME [<all|go|rs|js|py|dt|dk|week|month>:go]" ;;
     all)
         hub-trend ;;
+    go | golang)
+        hub-trend --lang=go ;;
     rs | rust)
         hub-trend --lang=rust ;;
     py | python)
@@ -227,9 +245,11 @@ function gotrd() {
         hub-trend --lang=javascript ;;
     dt | dart)
         hub-trend --lang=dart ;;
+    dk | dockerfile)
+        hub-trend --lang=dockerfile ;;
     week | month)
         hub-trend --lang=go --time=$1 ;;
-    go | *)
+    *)
         hub-trend --lang=go
     esac
 }
@@ -289,7 +309,7 @@ function gclone() {
         ;;
     esac
     package=${package%.git} 
-    result=$(git clone $1 $package)
+    result=$(git clone --recursive $1 $package)
     cd $package
 }
 
@@ -308,10 +328,16 @@ function get() {
         cd $HOME/coding/rs/src ;;
     js | javascript)
         cd $HOME/coding/js/src ;;
+    jv | java)
+        cd $HOME/coding/jv/src ;;
     dt | dart)
         cd $HOME/coding/dt/src ;;
     cc | cpp)
         cd $HOME/coding/cc/src ;;
+    wa | wasm)
+        cd $HOME/coding/wa/src ;;
+    hs | haskell) 
+        cd $HOME/coding/hs/src ;;
     *) 
         echo "> $1 is the unknown language type"
         return
@@ -335,17 +361,41 @@ function open-page() {
     fi
 }
 
-# Open the docker page of repo
-function dopage() {
+# docker utility operation beside of basic commands
+function dkr() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <docker image repo> on hub.docker.com"
+		echo "usage: $FUNCNAME <layer|open|clean> <params...>"
 		return
 	fi
-    open-page https://hub.docker.com/r/$1
+    case $1 in
+    layer)
+        echo "> display layer informaton of the image $2"
+        docker save -o image.tar $2
+        dlayer -f image.tar -n 1000 | less
+        rm -f image.tar
+        ;;
+    open)
+        echo "> open the dockerhub page ..."
+        open-page https://hub.docker.com/r/$2
+        ;;
+    clean) 
+        echo "> docker cleaning ..."
+        docker container prune -f
+        docker network prune -f
+        docker system prune -f
+        docker volume prune -f
+        docker images
+        ;;
+    *)
+        docker $@
+        ;;
+    esac
 }
 
 # usage for internal utility functions
 function usage() {
+    open-page
+    get
     goto
     goget
     gofile
@@ -354,10 +404,9 @@ function usage() {
     gohub
     gopage
     gclone
-    get
-    open-page
-    dopage
     gomod
+    gotrd -h
+    dkr
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
