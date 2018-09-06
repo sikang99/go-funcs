@@ -187,6 +187,11 @@ gotrd [<all|go|rs|js|py|dt|week|month>:go]
 $ gotrd rs
 ...
 ```
+### goport
+To find the processes using the given port.
+```
+$ goport 8080
+```
 
 ## Reference
 
