@@ -38,6 +38,8 @@ function goto() {
 		cd $HOME/coding/cc/src/stoney/opencv ;;
 	openvino* | vino)
 		cd $HOME/coding/cc/src/stoney/openvino ;;
+	make)
+		cd $HOME/coding/sh/src/stoney/makefiles ;;
 	go | golang)
 		cd $HOME/coding/go/src ;;
 	dt | dart)
@@ -56,6 +58,8 @@ function goto() {
 		cd $HOME/coding/hs/src ;;
 	wa | wasm)
 		cd $HOME/coding/wa/src ;;
+	sh | shell)
+		cd $HOME/coding/sh/src ;;
 	media)
 		cd $HOME/coding/media ;;
 	p2p*)
@@ -212,14 +216,14 @@ function gomod() {
     auto) 
         export GO111MODULE=auto
         echo `env | grep GO111MODULE` in `go version` ;;
-    init | vendor | verify)
+    init | tidy | vendor | verify)
         go mod $1 ;;
     build | install )
         go $1 ;;
     mod | edit)
         vi go.mod ;;
     sum)
-        vi go.mod ;;
+        vi go.sum ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
     *)
@@ -338,6 +342,8 @@ function get() {
         cd $HOME/coding/wa/src ;;
     hs | haskell) 
         cd $HOME/coding/hs/src ;;
+    sh | shell) 
+        cd $HOME/coding/sh/src ;;
     *) 
         echo "> $1 is the unknown language type"
         return
@@ -364,10 +370,17 @@ function open-page() {
 # docker utility operation beside of basic commands
 function dkr() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <layer|open|clean> <params...>"
+		echo "usage: $FUNCNAME <compose|machine|layer|open|clean> <params...>"
 		return
 	fi
+
     case $1 in
+    compose)
+        docker-compose $2 $3 $4
+        ;;
+    machine)
+        docker-machine $2 $3 $4
+        ;;
     layer)
         echo "> display layer informaton of the image $2"
         docker save -o image.tar $2
@@ -392,6 +405,15 @@ function dkr() {
     esac
 }
 
+# Find process(es) using the given port
+function goport() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <port number>"
+		return
+	fi
+    lsof -i -P | grep $1
+}
+
 # usage for internal utility functions
 function usage() {
     open-page
@@ -406,6 +428,7 @@ function usage() {
     gclone
     gomod
     gotrd -h
+    goport
     dkr
 }
 # CAUTION: don't use gvm as following
