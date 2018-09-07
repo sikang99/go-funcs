@@ -26,7 +26,7 @@ usage: gopath <package name>
 usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)
 usage: gohub <search text> written golng in github.com
 usage: gopage <.|url|github repo path>
-usage: gclone <package folder> on {github,gitlab}.com
+usage: gitclone <package folder> on {github,gitlab}.com
 ```
 
 ### goto
@@ -142,10 +142,10 @@ $ gopage .
 https://github.com/sikang99/go-funcs
 ```
 
-### gclone
-To clone the repo like as its web path, use `gclone` as following.
+### gitclone
+To clone the repo like as its web path, use `gitclone` as following.
 ```
-$ gclone https://github.com/yurydelendik/wasmtext
+$ gitclone https://github.com/yurydelendik/wasmtext
 git clone https://github.com/yurydelendik/wasmtext
 ...
 $ pwd
@@ -191,6 +191,15 @@ $ gotrd rs
 To find the processes using the given port.
 ```
 $ goport 8080
+```
+### gotoken
+Display prices of the crypto tokens such as bitcoin, ethereum, eos
+```
+$ gotoken
+usage: gotoken <market:m|binance:b>
+
+$ gotoken market
+...
 ```
 
 ## Reference

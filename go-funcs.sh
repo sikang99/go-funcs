@@ -202,20 +202,18 @@ function gover() {
 
 # set the value of GO111MODULE variable
 function gomod() {
-	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <auto|on|off|init|vendor|verify|clean> [`env | grep GO111MODULE`]"
-		return
-	fi
     case $1 in
+    . | check)
+        echo "$FUNCNAME> `go version` [`env | grep GO111MODULE`]" ;;
     on) 
         export GO111MODULE=on
-        echo `env | grep GO111MODULE` in `go version` ;;
+        gomod check ;;
     off) 
         export GO111MODULE=off
-        echo `env | grep GO111MODULE` in `go version` ;;
+        gomod check ;;
     auto) 
         export GO111MODULE=auto
-        echo `env | grep GO111MODULE` in `go version` ;;
+        gomod check ;;
     init | tidy | vendor | verify)
         go mod $1 ;;
     build | install )
@@ -226,9 +224,8 @@ function gomod() {
         vi go.sum ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
-    *)
-        echo "> $1 is an unknown mod type."
-        echo `env | grep GO111MODULE` in `go version` ;;
+    help | *)
+		echo "usage: $FUNCNAME <check|auto|on|off|init|vendor|verify|clean>"
     esac
 }
 
@@ -298,7 +295,7 @@ function gopage() {
 }
 
 # git cloning with various source types
-function gclone() {
+function gitclone() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
 		return
@@ -349,11 +346,11 @@ function get() {
         return
         ;;
     esac
-    gclone $2
+    gitclone $2
 }
 
 # general web page open
-function open-page() {
+function openpage() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <URL>"
 		return
@@ -389,7 +386,7 @@ function dkr() {
         ;;
     open)
         echo "> open the dockerhub page ..."
-        open-page https://hub.docker.com/r/$2
+        openpage https://hub.docker.com/r/$2
         ;;
     clean) 
         echo "> docker cleaning ..."
@@ -407,16 +404,39 @@ function dkr() {
 
 # Find process(es) using the given port
 function goport() {
-	if [ $# = 0 ]; then
+    case $1 in
+    [1-9]*)
+        lsof -i -P | grep $1
+        ;;
+    *)
 		echo "usage: $FUNCNAME <port number>"
-		return
-	fi
-    lsof -i -P | grep $1
+        ;;
+    esac
+}
+
+# Show price of the cryptocurrencies such as Bitcoin, Ethereum, Eos
+function gotoken() {
+    case $1 in
+    a | all)
+        $FUNCNAME market
+        $FUNCNAME binance
+        ;;
+    m | market)
+        token-ticker CoinMarketCap.Bitcoin CoinMarketCap.Ethereum CoinMarketCap.Eos
+        ;;
+    b | binance)
+        token-ticker Binance.BTCUSDT binance.ETHUSDT binance.EOSUSDT
+        ;;
+    *)
+		echo "usage: $FUNCNAME <market:m|binance:b>"
+        ;;
+    esac
 }
 
 # usage for internal utility functions
 function usage() {
-    open-page
+    gitclone
+    openpage
     get
     goto
     goget
@@ -425,11 +445,11 @@ function usage() {
     gover
     gohub
     gopage
-    gclone
     gomod
     gotrd -h
     goport
     dkr
+    gotoken
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"

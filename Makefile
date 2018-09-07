@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go.mod go-funcs.sh
-	git commit -m "write dkr() to replace dopage()"
+	git commit -m "rename gclone() into gitclone()"
 	git push
 
 git-login gl:
