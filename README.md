@@ -159,13 +159,13 @@ Function for downloading git sources of a package
 $ get <py|go|rs|dt|js> <package repo>
 ```
 
-### dkr
+### godkr
 Utility functions for docker
 ```
-$ dkr page golang
+$ godkr page golang
 https://hub.docker.com/r/golang/
 
-$ dkr clean
+$ godkr clean
 cleaning .... images
 ```
 ### gomod
@@ -193,7 +193,7 @@ To find the processes using the given port.
 $ goport 8080
 ```
 ### gotoken
-Display prices of the crypto tokens such as bitcoin, ethereum, eos
+Display prices of the crypto tokens such as bitcoin, ethereum, eos by using [polyrabbit/token-ticker](https://github.com/polyrabbit/token-ticker)
 ```
 $ gotoken
 usage: gotoken <market:m|binance:b>

@@ -3,6 +3,21 @@
 # Utility Functions for Gophers
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
 #---------------------------------------------------------------------
+# general web page open
+function openpage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <URL>"
+		return
+    fi
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        xdg-open $1
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        open $1
+    else
+        echo $1
+    fi
+}
+
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
@@ -18,13 +33,13 @@ function goto() {
 		cd $GOPATH ;;
     root) 
 		cd $GOPATH/root ;;
-	bin | gobin)
+	bin )
 		cd $GOPATH/bin ;;
-	src | gosrc)
+	src )
 		cd $GOPATH/src ;;
-	pkg | gopkg)
+	pkg )
 		cd $GOPATH/pkg ;;
-	mod | gomod)
+	mod )
 		cd $GOPATH/pkg/mod ;;
 	stoney)
 		cd $GOPATH/src/stoney ;;
@@ -65,7 +80,7 @@ function goto() {
 	p2p*)
 		cd $HOME/coding/js/src/github.com/P2PSP ;;
 	*)
-		echo "> '$1' is unknown" ;;
+		echo "$FUNCNAME> '$1' is unknown" ;;
 	esac
 }
 
@@ -87,7 +102,7 @@ function gopath() {
 	fi
     list=$(eval find $GOPATH/src -iname $1 -type d -print)
     if [ "$list" = "" ]; then
-        echo "> package '$1' not found in $GOPATH/src"
+        echo "$FUNCNAME> package '$1' not found in $GOPATH/src"
         return
     fi
     for dir in $list; do
@@ -99,7 +114,7 @@ function gopath() {
             return
         fi
     done
-    echo "> $FUNCNAME: '$1' not found in $GOPATH/src"
+    echo "$FUNCNAME> '$1' not found in $GOPATH/src"
 }
 
 # go get a package and goto its directory
@@ -187,11 +202,11 @@ function gover() {
             ln -s go1.11 go
         fi
         ;;
-    current | .) 
+    . | current) 
         #go version
         ;;
     *)
-        echo "> '$1' is not installed. select 1.9, 1.10 or 1.11"
+        echo "$FUNCNAME> '$1' is not installed. select 1.9, 1.10 or 1.11"
         ;;
     esac
 
@@ -216,17 +231,48 @@ function gomod() {
         gomod check ;;
     init | tidy | vendor | verify)
         go mod $1 ;;
-    build | install )
-        go $1 ;;
+    build | install | test)
+        go $1 $2 $3 ;;
     mod | edit)
         vi go.mod ;;
     sum)
         vi go.sum ;;
+    read)
+        vi *.md ;;
+    make)
+        vi Makefile ;;
+    rebuild)
+        rm -rf go.mod go.sum vendor/
+        go mod init
+        go mod tidy
+        go mod vendor
+        go build ./...
+        ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
     help | *)
 		echo "usage: $FUNCNAME <check|auto|on|off|init|vendor|verify|clean>"
     esac
+}
+
+# show installed states of the package
+function gopkg() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME <package>"
+        return
+    fi
+    if [ -d $GOPATH/pkg/mod/$1 ]; then
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$1"
+        ls $GOPATH/pkg/mod/$1 
+    fi
+    if [ -d  $GOPATH/src/$1 ]; then
+        echo "$FUNCNAME> $GOPATH/src/$1"
+        ls $GOPATH/src/$1
+    fi
+    if [ -d  ./vendor/$1 ]; then
+        echo "$FUNCNAME> ./vendor/$1"
+        ls ./vendor/$1
+    fi
 }
 
 # show github treading for the given language
@@ -305,7 +351,7 @@ function gitclone() {
 	    local package=${1#http*://} 
         ;;
     *)  # default on github.com
-        echo "> $1 is not a url to git"
+        echo "$FUNCNAME> $1 is not a url to git"
         return
         ;;
     esac
@@ -323,10 +369,10 @@ function get() {
     case $1 in 
     go | golang)
         cd $HOME/coding/go/src ;;
-    py | python)
-        cd $HOME/coding/py/src ;;
     rs | rust)
         cd $HOME/coding/rs/src ;;
+    py | python)
+        cd $HOME/coding/py/src ;;
     js | javascript)
         cd $HOME/coding/js/src ;;
     jv | java)
@@ -335,37 +381,22 @@ function get() {
         cd $HOME/coding/dt/src ;;
     cc | cpp)
         cd $HOME/coding/cc/src ;;
-    wa | wasm)
-        cd $HOME/coding/wa/src ;;
     hs | haskell) 
         cd $HOME/coding/hs/src ;;
     sh | shell) 
         cd $HOME/coding/sh/src ;;
+    wa | wasm)
+        cd $HOME/coding/wa/src ;;
     *) 
-        echo "> $1 is the unknown language type"
+        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|sh]"
         return
         ;;
     esac
     gitclone $2
 }
 
-# general web page open
-function openpage() {
-	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <URL>"
-		return
-    fi
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        xdg-open $1
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        open $1
-    else
-        echo $1
-    fi
-}
-
 # docker utility operation beside of basic commands
-function dkr() {
+function godkr() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <compose|machine|layer|open|clean> <params...>"
 		return
@@ -385,8 +416,12 @@ function dkr() {
         rm -f image.tar
         ;;
     open)
-        echo "> open the dockerhub page ..."
-        openpage https://hub.docker.com/r/$2
+        if [ "$2" = "" ]; then
+            echo "$FUNCNAME> $1 <repo name>"
+        else
+            echo "$FUNCNAME> open the dockerhub page ..."
+            openpage https://hub.docker.com/r/$2
+        fi
         ;;
     clean) 
         echo "> docker cleaning ..."
@@ -405,7 +440,7 @@ function dkr() {
 # Find process(es) using the given port
 function goport() {
     case $1 in
-    [1-9]*)
+    [[:digit:]]*) # [1-9]*
         lsof -i -P | grep $1
         ;;
     *)
@@ -446,9 +481,10 @@ function usage() {
     gohub
     gopage
     gomod
+    gopkg
     gotrd -h
     goport
-    dkr
+    godkr
     gotoken
 }
 # CAUTION: don't use gvm as following
