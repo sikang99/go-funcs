@@ -41,7 +41,7 @@ git g:
 	@echo ""
 
 git-update gu:
-	git add README.md Makefile go.mod go-funcs.sh
+	git add README.md Makefile go-funcs.sh
 	git commit -m "rename open-page() into openpage()"
 	git push
 
