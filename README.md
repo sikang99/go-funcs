@@ -27,6 +27,7 @@ usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)
 usage: gohub <search text> written golng in github.com
 usage: gopage <.|url|github repo path>
 usage: gitclone <package folder> on {github,gitlab}.com
+usage: godkr <compose|machine|layer|open|clean> <params...>
 ```
 
 ### goto
