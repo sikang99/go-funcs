@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "rename open-page() into openpage()"
+	git commit -m "rename dkr() into godkr()"
 	git push
 
 git-login gl:
