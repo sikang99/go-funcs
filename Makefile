@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "rename dkr() into godkr()"
+	git commit -m "add pyver() to changer the version of python"
 	git push
 
 git-login gl:

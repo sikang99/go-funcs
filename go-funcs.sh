@@ -219,12 +219,18 @@ function gover() {
 
 # change the version of python
 function pyver() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME> <2|3>"
+        return
+    fi
+
     pushd . > /dev/null
     cd /usr/bin
     if [ -s python ]; then
         sudo unlink python
         sudo unlink pip
     fi
+
     case $1 in
     2)
         sudo ln -s python2 python
@@ -235,9 +241,10 @@ function pyver() {
         sudo ln -s pip3 pip
         ;;
     *)
-        echo "$FUNCNAME> <2|3>"
+        echo "$FUNCNAME> $1 is unknown, choose <2|3>"
         ;;
     esac
+
     if [ ! -s python ]; then
         sudo ln -s python3 python
         sudo ln -s pip3 pip
@@ -584,6 +591,7 @@ function usage() {
     goport
     godkr
     gotoken
+    pyver
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
