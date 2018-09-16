@@ -197,11 +197,23 @@ $ goport 8080
 Display prices of the crypto tokens such as bitcoin, ethereum, eos by using [polyrabbit/token-ticker](https://github.com/polyrabbit/token-ticker)
 ```
 $ gotoken
-usage: gotoken <market:m|binance:b>
+usage: gotoken <all:a|market:m|binance:b>
 
 $ gotoken market
 ...
 ```
+
+### pyver
+Changer the python version and tool to use
+```
+$ pyver
+usage: pyver <2|3>
+
+$ pyver 3
+Python 3.6.5
+pip 9.0.1 from /usr/lib/python3/dist-packages (python 3.6)
+```
+
 
 ## Reference
 

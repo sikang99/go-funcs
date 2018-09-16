@@ -49,6 +49,8 @@ function goto() {
 		cd $HOME/coding/go/src/github.com/sikang99 ;;
 	http*)
 		cd $HOME/coding/go/src/stoney/httpserver2/server ;;
+	packt | book)
+		cd $HOME/coding/go/src/stoney/PacktBooks ;;
 	opencv* | ocv)
 		cd $HOME/coding/cc/src/stoney/opencv ;;
 	openvino* | vino)
@@ -215,6 +217,36 @@ function gover() {
     gocode
 }
 
+# change the version of python
+function pyver() {
+    pushd . > /dev/null
+    cd /usr/bin
+    if [ -s python ]; then
+        sudo unlink python
+        sudo unlink pip
+    fi
+    case $1 in
+    2)
+        sudo ln -s python2 python
+        sudo ln -s pip2 pip
+        ;;
+    3)
+        sudo ln -s python3 python
+        sudo ln -s pip3 pip
+        ;;
+    *)
+        echo "$FUNCNAME> <2|3>"
+        ;;
+    esac
+    if [ ! -s python ]; then
+        sudo ln -s python3 python
+        sudo ln -s pip3 pip
+    fi
+    python --version
+    pip --version
+    popd > /dev/null
+}
+
 # set the value of GO111MODULE variable
 function gomod() {
     case $1 in
@@ -229,11 +261,13 @@ function gomod() {
     auto) 
         export GO111MODULE=auto
         gomod check ;;
-    init | tidy | vendor | verify)
-        go mod $1 ;;
-    build | install | test)
+    init | tidy | vendor | verify | graph | why | edit)
+        go mod $1 $2 $3 ;;
+    build | install | test | list)
         go $1 $2 $3 ;;
-    mod | edit)
+    tag)
+        git describe --always ;;
+    mod)
         vi go.mod ;;
     sum)
         vi go.sum ;;
@@ -261,18 +295,38 @@ function gopkg() {
         echo "usage: $FUNCNAME <package>"
         return
     fi
-    if [ -d $GOPATH/pkg/mod/$1 ]; then
-        echo "$FUNCNAME> $GOPATH/pkg/mod/$1"
-        ls $GOPATH/pkg/mod/$1 
+
+    case $1 in
+    mod)
+    if [ -d $GOPATH/pkg/mod/$2 ]; then
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$2"
+        ls $GOPATH/pkg/mod/$2 
     fi
-    if [ -d  $GOPATH/src/$1 ]; then
-        echo "$FUNCNAME> $GOPATH/src/$1"
-        ls $GOPATH/src/$1
+    ;;
+    src)
+    if [ -d  $GOPATH/src/$2 ]; then
+        echo "$FUNCNAME> $GOPATH/src/$2"
+        ls $GOPATH/src/$2
     fi
-    if [ -d  ./vendor/$1 ]; then
-        echo "$FUNCNAME> ./vendor/$1"
-        ls ./vendor/$1
+    ;;
+    vendor)
+    if [ -d  ./vendor/$2 ]; then
+        echo "$FUNCNAME> ./vendor/$2"
+        ls ./vendor/$2
     fi
+    ;;
+    esac
+}
+
+# Ubuntu package handling
+function ubpkg() {
+    case $1 in 
+    remove)
+        sudo dpkg --remove --force-remove-reinstreq $1
+        ;;
+    *)
+        echo "usage: $FUNCNAME <command> <package>"
+    esac
 }
 
 # show github treading for the given language
@@ -387,8 +441,10 @@ function get() {
         cd $HOME/coding/sh/src ;;
     wa | wasm)
         cd $HOME/coding/wa/src ;;
+    sc | smart)
+        cd $HOME/coding/sc/src ;;
     *) 
-        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|sh]"
+        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|sh|sc]"
         return
         ;;
     esac
@@ -410,7 +466,7 @@ function godkr() {
         docker-machine $2 $3 $4
         ;;
     layer)
-        echo "> display layer informaton of the image $2"
+        echo "$FUNCNAME> display layer informaton of the image $2"
         docker save -o image.tar $2
         dlayer -f image.tar -n 1000 | less
         rm -f image.tar
@@ -424,7 +480,7 @@ function godkr() {
         fi
         ;;
     clean) 
-        echo "> docker cleaning ..."
+        echo "$FUNCNAME> docker cleaning ..."
         docker container prune -f
         docker network prune -f
         docker system prune -f
@@ -450,9 +506,10 @@ function goport() {
 }
 
 # Show price of the cryptocurrencies such as Bitcoin, Ethereum, Eos
+# github.com/miguelmota/cryptocharts
 function gotoken() {
     case $1 in
-    a | all)
+    a | all | .)
         $FUNCNAME market
         $FUNCNAME binance
         ;;
@@ -462,8 +519,49 @@ function gotoken() {
     b | binance)
         token-ticker Binance.BTCUSDT binance.ETHUSDT binance.EOSUSDT
         ;;
+    global | g)
+        cryptocharts -global ;;
+    bitcoin | btc)
+        cryptocharts -coin bitcoin ;;
+    ethereum | eth)
+        cryptocharts -coin ethereum ;;
+    eos)
+        cryptocharts -coin eos ;;
     *)
-		echo "usage: $FUNCNAME <market:m|binance:b>"
+		echo "usage: $FUNCNAME <market:m|binance:b|btc|eth|eos>"
+        ;;
+    esac
+}
+
+function godown() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <file names>"
+		return
+	fi
+    mv $HOME/다운로드/${1} .
+    ls -al ./${1}
+}
+
+# show hardware information
+function goinfo() {
+    case $1 in
+    linux)
+        uname -a
+        cat /etc/lsb-release
+        ;;
+    hw)
+        lshw ;;
+        #hwinfo ;; # sudo apt install hwinfo
+    cpu) 
+        lscpu ;;
+    usb)
+        lsusb ;;
+    video)
+        ls /dev/video*
+        v4l2-ctl --all  # sudo apt install v4l-utils
+        ;;
+    *)
+		echo "usage: $FUNCNAME <linux|hw|cpu|usb|video>"
         ;;
     esac
 }
