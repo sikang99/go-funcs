@@ -46,6 +46,9 @@ git-update gu:
 	git push
 
 git-login gl:
+	git config --global user.email "sikang99@gmail.com"
+	git config --global user.name "Stoney Kang"
+	git config --global push.default simple
 	git config credential.helper store
 
 git-tag gt:

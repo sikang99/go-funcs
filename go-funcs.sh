@@ -18,6 +18,23 @@ function openpage() {
     fi
 }
 
+function goshow() {
+    case $OSTYPE in
+    linux-gnu)
+        shotwell $1
+        ;;
+    darwin)
+        open $1
+        ;;
+    linux-gnueabihf) # Raspberry Pi
+        gpicview
+        ;;
+    *)
+        echo $1
+    esac
+}
+
+
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
@@ -55,6 +72,8 @@ function goto() {
 		cd $HOME/coding/cc/src/stoney/opencv ;;
 	openvino* | vino)
 		cd $HOME/coding/cc/src/stoney/openvino ;;
+	webrtc | rtc)
+		cd $HOME/coding/cc/src/github.com/aisouard/libwebrtc ;;
 	make)
 		cd $HOME/coding/sh/src/stoney/makefiles ;;
 	go | golang)
@@ -282,6 +301,8 @@ function gomod() {
         vi *.md ;;
     make)
         vi Makefile ;;
+    vbuild)
+        go build --mod=vendor ./... ;;
     rebuild)
         rm -rf go.mod go.sum vendor/
         go mod init
@@ -292,7 +313,7 @@ function gomod() {
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
     help | *)
-		echo "usage: $FUNCNAME <check|auto|on|off|init|vendor|verify|clean>"
+		echo "usage: $FUNCNAME <check|auto|on|off|init|vendor|verify|clean|vbuild|rebuild>"
     esac
 }
 
@@ -540,13 +561,23 @@ function gotoken() {
     esac
 }
 
+# Move the files of the download directory to the currenct directory
 function godown() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <file names>"
 		return
 	fi
-    mv $HOME/다운로드/${1} .
-    ls -al ./${1}
+
+    case $1 in
+    .)
+        ls -al ./$2 ;;
+    ..) 
+        ls -al $HOME/다운로드/$2 ;;
+    *)
+        mv "$HOME/다운로드/$1" .
+        ls -al "./$1"
+        ;;
+    esac
 }
 
 # show hardware information
