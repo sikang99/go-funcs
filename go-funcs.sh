@@ -1,4 +1,120 @@
 #!/bin/bash
+# --------------------------------------------------------------------
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
+PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
+
+
+alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove && sudo apt autoclean'
+alias bashrc='vi ~/.bashrc && source ~/.bashrc'
+alias vimrc='vi ~/.vimrc'
+alias cls='clear'
+alias d='clear && ls -CF'
+alias l2='tree -L 2'
+alias l3='tree -L 3'
+alias lr='tree'
+alias lm='tree | less'
+alias dirs='dirs -v'
+alias nls='sudo netstat -ntlp | grep LISTEN'
+alias em='vi Makefile'
+alias er='vi README.md'
+
+#alias goget="get go"
+alias ccget="get cc"    # c and c++
+alias pyget="get py"
+alias rsget="get rs"
+alias jsget="get js"
+alias jvget="get jv"
+alias dtget="get dt"    # dart
+alias waget="get wa"    # wasm
+alias hsget="get hs"    # wasm
+alias scget="get sc"    # solidity, smart contract
+
+#alias dthub='hub-search --lang=go'
+alias dthub='hub-search --lang=dart'
+alias jshub='hub-search --lang=javascript'
+alias schub='hub-search --lang=solidity'
+alias godig='hub-search'
+
+if [ -d "$HOME/coding/go" ]; then
+	export GOPATH=$HOME/coding/go
+	export GOROOT=$GOPATH/root/go
+	export GOSRC=$GOPATH/src
+	export GOBIN=$GOPATH/bin
+	export GOPKG=$GOPATH/pkg
+	export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+	echo "Golang `go version` setting ..."
+    #export GOPROXY=http://127.0.0.1:3000
+fi
+
+if [ -d "$HOME/.cargo" ]; then
+	#source $HOME/.cargo/env
+	export RSPATH=$HOME/.cargo
+	export PATH=$PATH:$RSPATH/bin
+    alias rshub='hub-search --lang=rust'
+	echo "Rust `cargo --version` setting ..."
+fi
+
+if [ -d "$HOME/.local" ]; then
+	export PYPATH=$HOME/.local
+	export PATH=$PATH:$PYPATH/bin
+	echo "`python --version` setting ..."
+fi
+
+if [ -d "$HOME/coding/dt" ]; then
+	export DTPATH=/usr/lib/dart
+	export PATH=$PATH:$DTPATH/bin:$HOME/.pub-cache/bin
+    alias ddev='pub run dart_dev'
+    # Flutter
+	export FLUTTER=$HOME/coding/dt/flutter
+	export PATH=$PATH:$FLUTTER/bin
+	echo "Dart & Flutter setting ..."
+fi
+
+if [ -d "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
+	export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
+	export EM_CONFIG=/home/stoney/.emscripten
+	export LLVM_ROOT=$EMSDK/clang/e1.38.10_64bit
+	export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/clang/e1.38.10_64bit/optimizer
+	export BINARYEN_ROOT=$EMSDK/clang/e1.38.10_64bit/binaryen
+	export EMSDK_NODE=$EMSDK/node/8.9.1_64bit/bin/node
+	export EMSCRIPTEN=$EMSDK/emscripten/1.38.10
+	export PATH=$PATH:$EMSDK:$LLVM_ROOT:$EMSDK/node/8.9.1_64bit/bin:$EMSCRIPTEN
+	echo "EMSDK setting ..."
+fi
+
+if [ -d "$HOME/.bazel" ]; then
+	export BAZEL_HOME=$HOME/.bazel
+	export PATH=$PATH:$BAZEL_HOME/bin
+	echo "Bazel setting ..."
+fi
+
+if [ -d "$HOME/intel/computer_vision_sdk" ]; then
+    export CVSHOME=$HOME/intel/computer_vision_sdk
+    source $CVSHOME/bin/setupvars.sh
+	echo "Intel CV SDK setting ..."
+fi
+
+#. /home/stoney/coding/c/emsdk-build/emsdk/emsdk_env.sh
+. /usr/share/autojump/autojump.sh
+eval "$(fasd --init auto)"
+#alias a='fasd -a'        # any
+#alias s='fasd -si'       # show / search / select
+#alias d='fasd -d'        # directory
+#alias f='fasd -f'        # file
+#alias sd='fasd -sid'     # interactive directory selection
+#alias sf='fasd -sif'     # interactive file selection
+#alias z='fasd_cd -d'     # cd, same functionality as j in autojump
+alias zz='fasd_cd -d -i' # cd with interactive selection
+
+# Personal (private) setting
+export DOWNLOAD=$HOME/다운로드
+#export DOWNLOAD=$HOME/Downloads
+
+# Private Personal Information
+# Github Repo Access Token
+export GITHUB_ACCESS_TOKEN=5c0b5e7e19123f06e1f7ba5c422d9ca709cbd8e9
+
+#!/bin/bash
 #---------------------------------------------------------------------
 # Utility Functions for Gophers
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
@@ -20,11 +136,11 @@ function openpage() {
 
 function goshow() {
     case $OSTYPE in
-    linux-gnu)
-        shotwell $1
-        ;;
     darwin)
         open $1
+        ;;
+    linux-gnu)
+        shotwell $1
         ;;
     linux-gnueabihf) # Raspberry Pi
         gpicview
@@ -570,17 +686,17 @@ function godown() {
 
     case $1 in
     .)
-        ls -al ./$2 ;;
+        ls -F ./$2 ;;
     ..) 
-        ls -al $HOME/다운로드/$2 ;;
+        ls -F $HOME/다운로드/$2 ;;
     *)
-        mv "$HOME/다운로드/$1" .
-        ls -al "./$1"
+        mv "$HOME/다운로드/${1}" .
+        ls -al "./${1}"
         ;;
     esac
 }
 
-# show hardware information
+# show installed hardware information
 function goinfo() {
     case $1 in
     linux)
@@ -595,11 +711,17 @@ function goinfo() {
     usb)
         lsusb ;;
     video)
-        ls /dev/video*
-        v4l2-ctl --all  # sudo apt install v4l-utils
+        for video in /dev/video* ; do
+            ls $video
+            #v4l2-ctl --all  # sudo apt install v4l-utils
+            v4l2-ctl -V --device=$video
+        done
+        ;;
+    service)
+        service --status-all
         ;;
     *)
-		echo "usage: $FUNCNAME <linux|hw|cpu|usb|video>"
+		echo "usage: $FUNCNAME <linux|hw|cpu|usb|video|service>"
         ;;
     esac
 }
