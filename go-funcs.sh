@@ -1,12 +1,14 @@
-#!/bin/bash
 # --------------------------------------------------------------------
-PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
-PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
+# Defined by Stoney, sikang99@gmail.com
+# --------------------------------------------------------------------
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
+export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
 
-
-alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove && sudo apt autoclean'
+alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
 alias bashrc='vi ~/.bashrc && source ~/.bashrc'
 alias vimrc='vi ~/.vimrc'
+alias rpi='ssh pi@192.168.0.17'
+
 alias cls='clear'
 alias d='clear && ls -CF'
 alias l2='tree -L 2'
@@ -15,10 +17,11 @@ alias lr='tree'
 alias lm='tree | less'
 alias dirs='dirs -v'
 alias nls='sudo netstat -ntlp | grep LISTEN'
+
 alias em='vi Makefile'
 alias er='vi README.md'
 
-#alias goget="get go"
+alias goget="get go"
 alias ccget="get cc"    # c and c++
 alias pyget="get py"
 alias rsget="get rs"
@@ -73,11 +76,11 @@ fi
 if [ -d "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
 	export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
 	export EM_CONFIG=/home/stoney/.emscripten
-	export LLVM_ROOT=$EMSDK/clang/e1.38.10_64bit
-	export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/clang/e1.38.10_64bit/optimizer
-	export BINARYEN_ROOT=$EMSDK/clang/e1.38.10_64bit/binaryen
+	export LLVM_ROOT=$EMSDK/clang/e1.38.15_64bit
+	export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/clang/e1.38.15_64bit/optimizer
+	export BINARYEN_ROOT=$EMSDK/clang/e1.38.15_64bit/binaryen
 	export EMSDK_NODE=$EMSDK/node/8.9.1_64bit/bin/node
-	export EMSCRIPTEN=$EMSDK/emscripten/1.38.10
+	export EMSCRIPTEN=$EMSDK/emscripten/1.38.15
 	export PATH=$PATH:$EMSDK:$LLVM_ROOT:$EMSDK/node/8.9.1_64bit/bin:$EMSCRIPTEN
 	echo "EMSDK setting ..."
 fi
@@ -96,7 +99,7 @@ fi
 
 #. /home/stoney/coding/c/emsdk-build/emsdk/emsdk_env.sh
 . /usr/share/autojump/autojump.sh
-eval "$(fasd --init auto)"
+#eval "$(fasd --init auto)"
 #alias a='fasd -a'        # any
 #alias s='fasd -si'       # show / search / select
 #alias d='fasd -d'        # directory
@@ -104,12 +107,10 @@ eval "$(fasd --init auto)"
 #alias sd='fasd -sid'     # interactive directory selection
 #alias sf='fasd -sif'     # interactive file selection
 #alias z='fasd_cd -d'     # cd, same functionality as j in autojump
-alias zz='fasd_cd -d -i' # cd with interactive selection
+#alias zz='fasd_cd -d -i' # cd with interactive selection
 
 # Personal (private) setting
 export DOWNLOAD=$HOME/다운로드
-#export DOWNLOAD=$HOME/Downloads
-
 # Private Personal Information
 # Github Repo Access Token
 export GITHUB_ACCESS_TOKEN=5c0b5e7e19123f06e1f7ba5c422d9ca709cbd8e9
@@ -256,7 +257,7 @@ function gopath() {
 
 # go get a package and goto its directory
 # https://www.tldp.org/LDP/abs/html/string-manipulation.html
-function goget() {
+function xgoget() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME [<option>] <package>"
 		return
@@ -326,17 +327,17 @@ function gover() {
         ;;
     *1.10* | stable)
         #GOcACHE={on|off}
-        if [ -d "go1.10.4" ]; then
+        if [ -d "go1.10.5" ]; then
             unlink go
-            ln -s go1.10.4 go
+            ln -s go1.10.5 go
         fi
         ;;
     *1.11* | latest)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11" ]; then
+        if [ -d "go1.11.2" ]; then
             unlink go
-            ln -s go1.11 go
+            ln -s go1.11.2 go
         fi
         ;;
     . | current) 
@@ -548,6 +549,9 @@ function gitclone() {
     http*://*)
 	    local package=${1#http*://} 
         ;;
+    github.com*)
+	    local package=https://$1 
+        ;;
     *)  # default on github.com
         echo "$FUNCNAME> $1 is not a url to git"
         return
@@ -637,14 +641,42 @@ function godkr() {
     esac
 }
 
-# Find process(es) using the given port
+# Find process(es) using the given port, 
+# $ type goport
 function goport() {
     case $1 in
     [[:digit:]]*) # [1-9]*
         lsof -i -P | grep $1
         ;;
+    list)
+        ss -ltn 
+        ;;
+    ip)
+        sudo arp-scan -l
+        ;;
+    scan)
+        sudo zenmap
+        #nmap -F 192.168.0.1-254
+        #nmap -p 1-1024 192.168.0.111
+        #nmap -v 192.168.0.11-20
+        ;;
+    rtsp)
+        cameradar -t 192.168.0.0/24
+        ;;
+    rpi)
+        cvlc rtsp://192.168.0.17:8554/unicast &
+        ;;
+    axis)
+        cvlc rtsp://imoment:imoment@192.168.0.18/axis-media/media.amp &
+        ;;
+    fake)
+        cvlc rtsp://admin:test@0.0.0.0:8554/live.sdp &
+        ;;
+    kill)
+        pkill -9 vlc
+        ;;
     *)
-		echo "usage: $FUNCNAME <port number>"
+		echo "usage: $FUNCNAME [<port number>|ip|scan|axis]"
         ;;
     esac
 }
@@ -699,12 +731,8 @@ function godown() {
 # show installed hardware information
 function goinfo() {
     case $1 in
-    linux)
-        uname -a
-        cat /etc/lsb-release
-        ;;
     hw)
-        lshw ;;
+        sudo lshw -businfo ;;
         #hwinfo ;; # sudo apt install hwinfo
     cpu) 
         lscpu ;;
@@ -714,14 +742,56 @@ function goinfo() {
         for video in /dev/video* ; do
             ls $video
             #v4l2-ctl --all  # sudo apt install v4l-utils
-            v4l2-ctl -V --device=$video
+            #v4l2-ctl -V --device=$video
+            v4l2-ctl --list-formats --device=$video
         done
+        ;;
+    linux)
+        uname -a
+        cat /etc/lsb-release
         ;;
     service)
         service --status-all
         ;;
     *)
-		echo "usage: $FUNCNAME <linux|hw|cpu|usb|video|service>"
+		echo "usage: $FUNCNAME <hw|cpu|usb|video|linux|service>"
+        ;;
+    esac
+}
+
+# Control VNC server and viewer
+# sudo apt install xfce4 xfce4-goodies
+# sudo apt install tightvncserver
+# sudo apt install tasksel openssh-server
+#
+# ~/.vnc/xstartup
+# #!/bin/sh
+# unset SESSION_MANAGER
+# unset DBUS_SESSION_BUS_ADDRESS
+# exec startxfce4
+function govnc() {
+    case $1 in
+    server | s)
+        vncserver
+        vncserver -list
+        ;;
+    client | c)
+        xtigervncviewer -SecurityTypes VncAuth,TLSVnc -passwd /home/stoney/.vnc/passwd :1
+        ;;
+    list | l)
+        vncserver -list
+        ;;
+    kill | k)
+        vncserver -kill :*
+        ;;
+    ssh)
+        #sudo systemctl --status-all
+        #sudo systemctl status/enable/disable/start/stop ssh
+        service ssh status
+        ssh -L 5901:127.0.0.1:5901 -C -N -l stoney localhost
+        ;;
+    *)
+		echo "usage: $FUNCNAME <server:s|client:c|list:l|kill:k|ssh>"
         ;;
     esac
 }
@@ -744,6 +814,7 @@ function usage() {
     goport
     godkr
     gotoken
+    govnc
     pyver
 }
 # CAUTION: don't use gvm as following
