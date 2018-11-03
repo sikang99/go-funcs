@@ -19,15 +19,25 @@ To see help message of usage after installation,
 
 ```sh
 $ usage
-usage: goto [.|..|root|path|stoney|sikang|wasm|webcam|http|dart]
-usage: goget [<option>] <package path>
+usage: gitclone <package folder> on {github,gitlab}.com
+usage: openpage <URL>
+usage: get [<language> <url of package>]
+usage: goto [.|..|root|path|stoney|sikang|webcam|http|go|rs|py|js|jv|dt|wa]
+usage: get [<language> <url of package>]
 usage: gofile <filename>
 usage: gopath <package name>
-usage: gover <go version>: 1.9, 1.10(stable), 1.11(beta2,beta3)
+usage: gover <go version>: 1.9, 1.10(stable), 1.11(latest)
 usage: gohub <search text> written golng in github.com
 usage: gopage <.|url|github repo path>
-usage: gitclone <package folder> on {github,gitlab}.com
+usage: gomod <check|auto|on|off|init|vendor|verify|clean|vbuild|rebuild>
+usage: gopkg <package>
+usage: gotrd [<all|go|rs|js|py|dt|dk|week|month>:go]
+usage: goport [<port number>|ip|scan|axis]
 usage: godkr <compose|machine|layer|open|clean> <params...>
+usage: gotoken <market:m|binance:b|btc|eth|eos>
+usage: govnc <server:s|client:c|list:l|kill:k|ssh>
+usage: pyver> <2|3>
+
 ```
 
 ### goto
