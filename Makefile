@@ -42,7 +42,7 @@ git g:
 
 git-update gu:
 	git add README.md Makefile go-funcs.sh
-	git commit -m "add pyver() to changer the version of python"
+	git commit -m "add gitupdate() to update local files"
 	git push
 
 git-login gl:
