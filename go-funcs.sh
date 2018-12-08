@@ -573,11 +573,23 @@ function gitclone() {
 
 # Git force pull to overwrite local files
 function gitupdate() {
-    git fetch --all
-    git reset --hard origin/master
-    git pull origin master
-}
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <.>"
+		return
+	fi
 
+    case $1 in
+    .)
+        git fetch --all
+        git reset --hard origin/master
+        git pull origin master
+        ;;
+    *)
+        echo "$FUNCNAME> $1 is unkown option"
+        return
+        ;;
+    esac
+}
 
 # git clone by language type
 function get() {
@@ -838,6 +850,7 @@ function govnc() {
 # usage for internal utility functions
 function usage() {
     gitclone
+    gitupdate
     openpage
     get
     goto
