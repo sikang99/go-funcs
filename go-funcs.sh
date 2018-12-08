@@ -29,7 +29,7 @@ alias jsget="get js"
 alias jvget="get jv"
 alias dtget="get dt"    # dart
 alias waget="get wa"    # wasm
-alias hsget="get hs"    # wasm
+alias hsget="get hs"    # haskell
 alias scget="get sc"    # solidity, smart contract
 
 #alias dthub='hub-search --lang=go'
@@ -332,7 +332,13 @@ function gover() {
             ln -s go1.10.5 go
         fi
         ;;
-    *1.11* | latest)
+    *1.11*)
+        if [ -d "go1.11.1" ]; then
+            unlink go
+            ln -s go1.11.1 go
+        fi
+        ;;
+    latest)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
         if [ -d "go1.11.2" ]; then
@@ -539,33 +545,44 @@ function gopage() {
     esac
 }
 
-# git cloning with various source types
+# Git cloning with various source types
 function gitclone() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
 		return
 	fi
-    case $1 in
+
+    local url=$1
+    local package=${url%.git} 
+
+    case $url in
     http*://*)
-	    local package=${1#http*://} 
+	    package=${url#http*://} 
         ;;
     github.com*)
-	    local package=https://$1 
+	    url=https://$1 
         ;;
     *)  # default on github.com
-        echo "$FUNCNAME> $1 is not a url to git"
+        echo "$FUNCNAME> $url is not a url to git"
         return
         ;;
     esac
-    package=${package%.git} 
-    result=$(git clone --recursive $1 $package)
+    result=$(git clone --recursive $url $package)
     cd $package
 }
+
+# Git force pull to overwrite local files
+function gitupdate() {
+    git fetch --all
+    git reset --hard origin/master
+    git pull origin master
+}
+
 
 # git clone by language type
 function get() {
 	if [ $# -lt 2 ]; then
-		echo "usage: $FUNCNAME [<language> <url of package>]"
+		echo "usage: $FUNCNAME [<language> <url of package>] are required."
 		return
 	fi
     case $1 in 
@@ -602,7 +619,7 @@ function get() {
 # docker utility operation beside of basic commands
 function godkr() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <compose|machine|layer|open|clean> <params...>"
+		echo "usage: $FUNCNAME <compose|machine|layer|open|clean|run> <params...>"
 		return
 	fi
 
@@ -634,6 +651,17 @@ function godkr() {
         docker system prune -f
         docker volume prune -f
         docker images
+        ;;
+    run)
+        case $2 in
+        rust)
+            # https://hub.docker.com/r/wasm/toolchain/
+            docker run -it --rm -v $PWD:/project wasm/toolchain:latest /bin/bash --login
+            ;;
+        *)
+            echo "$FUNCNAME> $1 <rust>"
+            ;;
+        esac
         ;;
     *)
         docker $@
@@ -703,8 +731,10 @@ function gotoken() {
         cryptocharts -coin ethereum ;;
     eos)
         cryptocharts -coin eos ;;
+    c | coin)
+        cointop ;;
     *)
-		echo "usage: $FUNCNAME <market:m|binance:b|btc|eth|eos>"
+		echo "usage: $FUNCNAME <coin:c|market:m|binance:b|btc|eth|eos>"
         ;;
     esac
 }
@@ -753,8 +783,17 @@ function goinfo() {
     service)
         service --status-all
         ;;
+    netdata)
+        docker run \
+            --name netdata \
+            -d --cap-add SYS_PTRACE \
+            -v /proc:/host/proc:ro \
+            -v /sys:/host/sys:ro \
+            -p 19999:19999 titpetric/netdata
+        openpage http://localhost:19999
+        ;;
     *)
-		echo "usage: $FUNCNAME <hw|cpu|usb|video|linux|service>"
+		echo "usage: $FUNCNAME <hw|cpu|usb|video|linux|service|netdata>"
         ;;
     esac
 }
