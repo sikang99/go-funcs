@@ -8,6 +8,10 @@ alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y &
 alias bashrc='vi ~/.bashrc && source ~/.bashrc'
 alias vimrc='vi ~/.vimrc'
 alias rpi='ssh pi@192.168.0.17'
+alias makef='make -f'
+
+alias chrome='chromium-browser'
+alias hchrome='chrome --headless'
 
 alias cls='clear'
 alias d='clear && ls -CF'
@@ -47,6 +51,7 @@ if [ -d "$HOME/coding/go" ]; then
 	export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 	echo "Golang `go version` setting ..."
     #export GOPROXY=http://127.0.0.1:3000
+    alias gowasm='GOOS=js GOARCH=wasm go'
 fi
 
 if [ -d "$HOME/.cargo" ]; then
@@ -167,14 +172,16 @@ function goto() {
 		cd $GOPATH ;;
     root) 
 		cd $GOPATH/root ;;
-	bin )
+	bin)
 		cd $GOPATH/bin ;;
-	src )
+	src)
 		cd $GOPATH/src ;;
-	pkg )
+	pkg)
 		cd $GOPATH/pkg ;;
-	mod )
+	mod)
 		cd $GOPATH/pkg/mod ;;
+	wrk | work)
+		cd $GOPATH/wrk ;;
 	stoney)
 		cd $GOPATH/src/stoney ;;
 	webcam)
@@ -307,14 +314,14 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(stable), 1.11(latest)"
+        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(beta)"
         return
     fi
 
     pushd . > /dev/null
     cd $HOME/coding/go/root
     if [ ! -L "go" ]; then 
-        ln -s go1.10.4 go
+        ln -s go1.10.7 go
     fi
 
     case $1 in
@@ -325,25 +332,25 @@ function gover() {
             ln -s go1.9.7 go
         fi
         ;;
-    *1.10* | stable)
+    *1.10*)
         #GOcACHE={on|off}
-        if [ -d "go1.10.5" ]; then
+        if [ -d "go1.10.8" ]; then
             unlink go
-            ln -s go1.10.5 go
+            ln -s go1.10.8 go
         fi
         ;;
-    *1.11*)
-        if [ -d "go1.11.1" ]; then
-            unlink go
-            ln -s go1.11.1 go
-        fi
-        ;;
-    latest)
+    *1.11* | stable)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.2" ]; then
+        if [ -d "go1.11.5" ]; then
             unlink go
-            ln -s go1.11.2 go
+            ln -s go1.11.5 go
+        fi
+        ;;
+    *1.12* | beta)
+        if [ -d "go1.12beta2" ]; then
+            unlink go
+            ln -s go1.12beta2 go
         fi
         ;;
     . | current) 
@@ -559,7 +566,7 @@ function gitclone() {
     http*://*)
 	    package=${url#http*://} 
         ;;
-    github.com*)
+    github.com* | golang.org*)
 	    url=https://$1 
         ;;
     *)  # default on github.com

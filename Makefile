@@ -8,7 +8,7 @@ EDITOR=vim
 
 usage:
 	@echo ""
-	@echo "usage: make [edit|run|git]"
+	@echo "usage: make [edit|run|copy|git]"
 	@echo ""
 
 # ---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ edit-make em:
 run r:
 	./$(SCRIPT)
 
-cp:
+copy cp:
 	cp ~/.bashrc go-funcs.sh
 	vi go-funcs.sh
 
