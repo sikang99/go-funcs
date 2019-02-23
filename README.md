@@ -1,4 +1,4 @@
-# Go-Funcs
+# Shell Functions for Go Development
 
 Some utility shell script functions useful in the go development environment
 
@@ -18,26 +18,26 @@ $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 To see help message of usage after installation, 
 
 ```sh
-$ usage
 usage: gitclone <package folder> on {github,gitlab}.com
+usage: gitupdate <.>
 usage: openpage <URL>
-usage: get [<language> <url of package>]
+usage: get [<language> <url of package>] are required.
 usage: goto [.|..|root|path|stoney|sikang|webcam|http|go|rs|py|js|jv|dt|wa]
-usage: get [<language> <url of package>]
+usage: get [<language> <url of package>] are required.
+usage: gofind <search string> [path to start]
 usage: gofile <filename>
 usage: gopath <package name>
-usage: gover <go version>: 1.9, 1.10(stable), 1.11(latest)
+usage: gover <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(.rc1:beta)
 usage: gohub <search text> written golng in github.com
 usage: gopage <.|url|github repo path>
 usage: gomod <check|auto|on|off|init|vendor|verify|clean|vbuild|rebuild>
 usage: gopkg <package>
 usage: gotrd [<all|go|rs|js|py|dt|dk|week|month>:go]
 usage: goport [<port number>|ip|scan|axis]
-usage: godkr <compose|machine|layer|open|clean> <params...>
-usage: gotoken <market:m|binance:b|btc|eth|eos>
+usage: godkr <compose|machine|layer|open|clean|run> <params...>
+usage: gotoken <coin:c|market:m|binance:b|btc|eth|eos>
 usage: govnc <server:s|client:c|list:l|kill:k|ssh>
-usage: pyver> <2|3>
-
+usage: pyver <2|3>
 ```
 
 ### goto
