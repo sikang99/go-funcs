@@ -2,7 +2,7 @@
 # Defined by Stoney, sikang99@gmail.com
 # --------------------------------------------------------------------
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
-export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
+export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
 
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
 alias bashrc='vi ~/.bashrc && source ~/.bashrc'
@@ -25,16 +25,16 @@ alias nls='sudo netstat -ntlp | grep LISTEN'
 alias em='vi Makefile'
 alias er='vi README.md'
 
-alias goget="get go"
+alias goget="get go"    # go
 alias ccget="get cc"    # c and c++
-alias pyget="get py"
-alias rsget="get rs"
-alias jsget="get js"
-alias jvget="get jv"
+alias pyget="get py"    # python
+alias rsget="get rs"    # rust
+alias jsget="get js"    # javascript
+alias jvget="get jv"    # java
 alias dtget="get dt"    # dart
-alias waget="get wa"    # wasm
 alias hsget="get hs"    # haskell
 alias scget="get sc"    # solidity, smart contract
+alias waget="get wa"    # wasm
 
 #alias dthub='hub-search --lang=go'
 alias dthub='hub-search --lang=dart'
@@ -75,6 +75,7 @@ if [ -d "$HOME/coding/dt" ]; then
     # Flutter
 	export FLUTTER=$HOME/coding/dt/flutter
 	export PATH=$PATH:$FLUTTER/bin
+    export CGO_LDFLAGS=-L$HOME/coding/dt/flutter-engine
 	echo "Dart & Flutter setting ..."
 fi
 
@@ -229,14 +230,34 @@ function goto() {
 	esac
 }
 
+# search file and directory by the given string
+function gofind() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <search string> [path to start]"
+		return
+	fi
+
+    # search with string inclusion
+	if [ $2 ]; then
+        find $2 -name *$1* -print
+    else
+        find . -name *$1* -print
+    fi
+}
+
 # fast file finder from HOME
 function gofile() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <filename>"
+		echo "usage: $FUNCNAME <filename> [path to start]"
 		return
 	fi
+
     # case insensitive search
-	find ~ -iname $1 -type f -print
+	if [ $2 ]; then
+	    find $2 -iname $1 -type f -print
+    else
+	    find ~ -iname $1 -type f -print
+    fi
 }
 
 # fast package finder from GOPATH
@@ -314,7 +335,7 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(beta)"
+        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(.rc1:beta)"
         return
     fi
 
@@ -348,9 +369,9 @@ function gover() {
         fi
         ;;
     *1.12* | beta)
-        if [ -d "go1.12beta2" ]; then
+        if [ -d "go1.12rc1" ]; then
             unlink go
-            ln -s go1.12beta2 go
+            ln -s go1.12rc1 go
         fi
         ;;
     . | current) 
@@ -369,7 +390,7 @@ function gover() {
 # change the version of python
 function pyver() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME> <2|3>"
+        echo "usage: $FUNCNAME <2|3>"
         return
     fi
 
@@ -566,7 +587,7 @@ function gitclone() {
     http*://*)
 	    package=${url#http*://} 
         ;;
-    github.com* | golang.org*)
+    github.com* | golang.org* | gopkg.in*)
 	    url=https://$1 
         ;;
     *)  # default on github.com
@@ -863,6 +884,7 @@ function usage() {
     goto
     goget
     gofile
+    gofind
     gopath
     gover
     gohub
