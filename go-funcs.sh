@@ -3,6 +3,7 @@
 # --------------------------------------------------------------------
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
+export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu
 
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
 alias bashrc='vi ~/.bashrc && source ~/.bashrc'
@@ -15,15 +16,16 @@ alias hchrome='chrome --headless'
 
 alias cls='clear'
 alias d='clear && ls -CF'
-alias l2='tree -L 2'
-alias l3='tree -L 3'
 alias lr='tree'
-alias lm='tree | less'
+alias lr2='tree -L 2'
+alias lr3='tree -L 3'
+alias lrm='tree | less'
 alias dirs='dirs -v'
 alias nls='sudo netstat -ntlp | grep LISTEN'
 
 alias em='vi Makefile'
 alias er='vi README.md'
+alias ey='vi pubspec.yaml'
 
 alias goget="get go"    # go
 alias ccget="get cc"    # c and c++
@@ -74,8 +76,9 @@ if [ -d "$HOME/coding/dt" ]; then
     alias ddev='pub run dart_dev'
     # Flutter
 	export FLUTTER=$HOME/coding/dt/flutter
-	export PATH=$PATH:$FLUTTER/bin
-    export CGO_LDFLAGS=-L$HOME/coding/dt/flutter-engine
+	export PATH=$PATH:$FLUTTER/bin:/$HOME/coding/dt/android-studio/bin
+    export CGO_LDFLAGS="-L$HOME/coding/dt/flutter-engine"
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/coding/dt/flutter-engine
 	echo "Dart & Flutter setting ..."
 fi
 
@@ -230,6 +233,55 @@ function goto() {
 	esac
 }
 
+function gotter() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [open|build|upgrade|yaml|...]"
+		return
+	fi
+
+    case $1 in
+    open | launch)
+        case $2 in
+        ios | iphone)
+            open -a Simulator   # in MacOS
+            ;;
+        pixel)
+            flutter emulators --launch Pixel_XL_API_28
+            ;;
+        nexus | *)
+            flutter emulators --launch Nexus_5X_API_28 # in Linux
+            ;;
+        esac
+        ;;
+    studio)
+        $HOME/coding/dt/android-studio/bin/studio.sh &
+        ;;
+    build)
+        flutter packages get    # pub get
+        flutter build bundle
+        ;;
+    upgrade)
+        flutter upgrade
+        flutter doctor -v
+        ;;
+    yaml | y)
+        vi pubspec.yaml
+        ;;
+    android | apk | ios | ipa)
+        flutter build $1
+        ;;
+    device* | emulator*)
+        flutter $@
+        ;;
+    debug) # launch.json in vscode
+        flutter attach --device-id=flutter-tester --debug-port=49494
+        ;;
+    *)
+        flutter $@
+        ;;
+    esac
+}
+
 # search file and directory by the given string
 function gofind() {
 	if [ $# = 0 ]; then
@@ -335,7 +387,7 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(.rc1:beta)"
+        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(0:dev)"
         return
     fi
 
@@ -368,11 +420,13 @@ function gover() {
             ln -s go1.11.5 go
         fi
         ;;
-    *1.12* | beta)
-        if [ -d "go1.12rc1" ]; then
+    *1.12* | dev)
+        if [ -d "go1.12" ]; then
             unlink go
-            ln -s go1.12rc1 go
+            ln -s go1.12 go
         fi
+        ;;
+    *1.13* | beta)
         ;;
     . | current) 
         #go version
@@ -410,6 +464,8 @@ function pyver() {
         sudo ln -s python3 python
         sudo ln -s pip3 pip
         ;;
+    . | current) 
+        ;;
     *)
         echo "$FUNCNAME> $1 is unknown, choose <2|3>"
         ;;
@@ -426,22 +482,19 @@ function pyver() {
 
 # set the value of GO111MODULE variable
 function gomod() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [auto|on|off|<command>...]"
+		return
+	fi
+
     case $1 in
     . | check)
         echo "$FUNCNAME> `go version` [`env | grep GO111MODULE`]" ;;
-    on) 
-        export GO111MODULE=on
+    on | off |auto) 
+        export GO111MODULE=$1
         gomod check ;;
-    off) 
-        export GO111MODULE=off
-        gomod check ;;
-    auto) 
-        export GO111MODULE=auto
-        gomod check ;;
-    init | tidy | vendor | verify | graph | why | edit)
-        go mod $1 $2 $3 ;;
-    build | install | test | list)
-        go $1 $2 $3 ;;
+    init | tidy | vendor | verify | graph | why | edit | download)
+        go mod $@ ;;
     tag)
         git describe --always ;;
     mod)
@@ -463,8 +516,8 @@ function gomod() {
         ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
-    help | *)
-		echo "usage: $FUNCNAME <check|auto|on|off|init|vendor|verify|clean|vbuild|rebuild>"
+    *)
+        go $@ ;;
     esac
 }
 
@@ -886,6 +939,7 @@ function usage() {
     gofile
     gofind
     gopath
+    gotter
     gover
     gohub
     gopage
