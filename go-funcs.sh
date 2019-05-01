@@ -5,12 +5,16 @@ export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
 export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu
 
+alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
+alias upgrade='flutter upgrade'
 alias bashrc='vi ~/.bashrc && source ~/.bashrc'
 alias vimrc='vi ~/.vimrc'
+alias profile='vi ~/.profile'
 alias rpi='ssh pi@192.168.0.17'
 alias makef='make -f'
 
+alias video='v4l2-ctl --list-devices --list-ctrls --list-formats'
 alias chrome='chromium-browser'
 alias hchrome='chrome --headless'
 
@@ -23,14 +27,17 @@ alias lrm='tree | less'
 alias dirs='dirs -v'
 alias nls='sudo netstat -ntlp | grep LISTEN'
 
+alias ed='vi Dockerfile'
 alias em='vi Makefile'
 alias er='vi README.md'
-alias ey='vi pubspec.yaml'
+alias ey='vi *.y*'
+alias ei='vi .gitignore'
 
 alias goget="get go"    # go
 alias ccget="get cc"    # c and c++
 alias pyget="get py"    # python
 alias rsget="get rs"    # rust
+alias jlget="get jl"    # julia
 alias jsget="get js"    # javascript
 alias jvget="get jv"    # java
 alias dtget="get dt"    # dart
@@ -43,6 +50,13 @@ alias dthub='hub-search --lang=dart'
 alias jshub='hub-search --lang=javascript'
 alias schub='hub-search --lang=solidity'
 alias godig='hub-search'
+
+alias gst-launch='gst-launch-1.0'
+
+#-----------------------------------------------------------------------------------------
+if [ -d "$HOME/.local" ]; then
+	export PATH=$PATH:$HOME/.local/bin
+fi
 
 if [ -d "$HOME/coding/go" ]; then
 	export GOPATH=$HOME/coding/go
@@ -70,10 +84,23 @@ if [ -d "$HOME/.local" ]; then
 	echo "`python --version` setting ..."
 fi
 
+if [ -f "$HOME/intel/computer_vision_sdk" ]; then
+    export CVSHOME=$HOME/intel/computer_vision_sdk
+    source $CVSHOME/bin/setupvars.sh
+	echo "Intel CV SDK setting ..."
+fi
+
+if [ -d "$HOME/coding/jl" ]; then
+	export JULIA_HOME=$HOME/coding/jl
+	export PATH=$PATH:$JULIA_HOME/julia/bin
+	echo "Julia `julia --version` setting ..."
+fi
+
+# --- SDKs
 if [ -d "$HOME/coding/dt" ]; then
 	export DTPATH=/usr/lib/dart
 	export PATH=$PATH:$DTPATH/bin:$HOME/.pub-cache/bin
-    alias ddev='pub run dart_dev'
+    #alias ddev='pub run dart_dev'
     # Flutter
 	export FLUTTER=$HOME/coding/dt/flutter
 	export PATH=$PATH:$FLUTTER/bin:/$HOME/coding/dt/android-studio/bin
@@ -82,7 +109,7 @@ if [ -d "$HOME/coding/dt" ]; then
 	echo "Dart & Flutter setting ..."
 fi
 
-if [ -d "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
+if [ -x "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
 	export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
 	export EM_CONFIG=/home/stoney/.emscripten
 	export LLVM_ROOT=$EMSDK/clang/e1.38.15_64bit
@@ -100,11 +127,12 @@ if [ -d "$HOME/.bazel" ]; then
 	echo "Bazel setting ..."
 fi
 
-if [ -d "$HOME/intel/computer_vision_sdk" ]; then
-    export CVSHOME=$HOME/intel/computer_vision_sdk
-    source $CVSHOME/bin/setupvars.sh
-	echo "Intel CV SDK setting ..."
+if [ -f "$HOME/coding/cc/src/stoney/blender" ]; then
+	export BLENDER_HOME=$HOME/coding/cc/src/stoney/blender
+	export PATH=$PATH:$BLENDER_HOME
+	echo "Blender setting ..."
 fi
+
 
 #. /home/stoney/coding/c/emsdk-build/emsdk/emsdk_env.sh
 . /usr/share/autojump/autojump.sh
@@ -164,7 +192,7 @@ function goshow() {
 # direct directory jump
 function goto() {
 	if [ "$1" = "" ]; then
-		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|webcam|http|go|rs|py|js|jv|dt|wa]"
+		echo "usage: $FUNCNAME [.|..|root|path|stoney|sikang|webcam|http|go|rs|py|js|jv|dt|wa|hb]"
 		return
 	fi
 	case $1 in
@@ -212,6 +240,8 @@ function goto() {
 		cd $HOME/coding/rs/src ;;
 	py | python)
 		cd $HOME/coding/py/src ;;
+	jl | julia)
+		cd $HOME/coding/jl/src ;;
 	js | javascript)
 		cd $HOME/coding/js/src ;;
 	jv | java)
@@ -224,18 +254,25 @@ function goto() {
 		cd $HOME/coding/wa/src ;;
 	sh | shell)
 		cd $HOME/coding/sh/src ;;
-	media)
+	media | video | audio)
 		cd $HOME/coding/media ;;
 	p2p*)
 		cd $HOME/coding/js/src/github.com/P2PSP ;;
+	pion)
+		cd $HOME/coding/go/src/github.com/pion ;;
+	flutter)
+		cd $FLUTTER ;;
+	handbook | hb)
+		cd $HOME/coding/dt/src/stoney/flutter-tutorials-handbook ;;
 	*)
 		echo "$FUNCNAME> '$1' is unknown" ;;
 	esac
 }
 
-function gotter() {
+# script for flutter programming
+function futter() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME [open|build|upgrade|yaml|...]"
+		echo "usage: $FUNCNAME [open|build|force|upgrade|clean|yaml|...]"
 		return
 	fi
 
@@ -243,26 +280,37 @@ function gotter() {
     open | launch)
         case $2 in
         ios | iphone)
-            open -a Simulator   # in MacOS
-            ;;
+            open -a Simulator ;;  # in MacOS
         pixel)
-            flutter emulators --launch Pixel_XL_API_28
-            ;;
+            flutter emulators --launch Pixel_XL_API_28 ;;
         nexus | *)
-            flutter emulators --launch Nexus_5X_API_28 # in Linux
-            ;;
+            flutter emulators --launch Nexus_5X_API_28 ;; # in Linux
         esac
         ;;
     studio)
         $HOME/coding/dt/android-studio/bin/studio.sh &
         ;;
     build)
-        flutter packages get    # pub get
+        flutter packages get
         flutter build bundle
+        ;;
+    force)
+        #flutter packages upgrade
+        flutter update-packages --force-upgrade
         ;;
     upgrade)
         flutter upgrade
         flutter doctor -v
+        ;;
+    clean)
+        pushd . > /dev/null
+        cd $FLUTTER
+        git clean -xfd
+        git stash save --keep-index
+        git stash drop
+        git pull
+        flutter doctor
+        popd
         ;;
     yaml | y)
         vi pubspec.yaml
@@ -270,14 +318,55 @@ function gotter() {
     android | apk | ios | ipa)
         flutter build $1
         ;;
-    device* | emulator*)
-        flutter $@
-        ;;
     debug) # launch.json in vscode
         flutter attach --device-id=flutter-tester --debug-port=49494
         ;;
-    *)
+    profile)
+        flutter run --profile
+        ;;
+    release) # launch.json in vscode
+        flutter run --release
+        ;;
+    device* | emulator* | *)
         flutter $@
+        ;;
+    esac
+}
+
+# script for dart programming
+function datter() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [update|yaml|format|web|...]"
+		return
+	fi
+
+    case $1 in
+    update)
+        pub global activate stagehand
+        pub global activate webdev
+        pub global list
+        ;;
+    build)
+        pub get
+        webdev build
+        ;;
+    serve)
+        webdev serve --live-reload
+        ;;
+    test)
+        pub run build_runner test -- -p chrome
+        ;;
+    analyze)
+        dartanalyzer lib/ web/ test/
+        ;;
+    format | fmt)
+        dartfmt -w .
+        ;;
+    yaml | y)
+        vi pubspec.yaml
+        ;;
+    *)
+        pub $@
         ;;
     esac
 }
@@ -387,7 +476,7 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9, 1.10(.8), 1.11(.5:stable), 1.12(0:dev)"
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.6), 1.12(.1)"
         return
     fi
 
@@ -412,24 +501,27 @@ function gover() {
             ln -s go1.10.8 go
         fi
         ;;
-    *1.11* | stable)
+    *1.11*)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.5" ]; then
+        if [ -d "go1.11.9" ]; then
             unlink go
-            ln -s go1.11.5 go
+            ln -s go1.11.9 go
         fi
         ;;
-    *1.12* | dev)
-        if [ -d "go1.12" ]; then
+    *1.12*)
+        if [ -d "go1.12.4" ]; then
             unlink go
-            ln -s go1.12 go
+            ln -s go1.12.4 go
         fi
         ;;
-    *1.13* | beta)
+    *1.13* | new)
         ;;
     . | current) 
         #go version
+        ;;
+    list)
+        ls -al $(GOROOT)
         ;;
     *)
         echo "$FUNCNAME> '$1' is not installed. select 1.9, 1.10 or 1.11"
@@ -501,10 +593,8 @@ function gomod() {
         vi go.mod ;;
     sum)
         vi go.sum ;;
-    read)
-        vi *.md ;;
-    make)
-        vi Makefile ;;
+    list)
+        go list -m all ;;
     vbuild)
         go build --mod=vendor ./... ;;
     rebuild)
@@ -524,7 +614,7 @@ function gomod() {
 # show installed states of the package
 function gopkg() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <package>"
+        echo "usage: $FUNCNAME [mod|src|vendor] [<package>]"
         return
     fi
 
@@ -685,6 +775,8 @@ function get() {
         cd $HOME/coding/rs/src ;;
     py | python)
         cd $HOME/coding/py/src ;;
+    jl | julia)
+        cd $HOME/coding/jl/src ;;
     js | javascript)
         cd $HOME/coding/js/src ;;
     jv | java)
@@ -744,6 +836,9 @@ function godkr() {
         docker system prune -f
         docker volume prune -f
         docker images
+        ;;
+    lint)
+        godolint $2 $3
         ;;
     run)
         case $2 in
@@ -928,6 +1023,29 @@ function govnc() {
     esac
 }
 
+# GSstremer 1.0, gst-* commands
+function gst() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <info|play|search|version>"
+		return
+	fi
+
+    case $1 in
+    info)
+        v4l2-ctl --list-devices --list-ctrls --list-formats
+        ;;
+    play)
+        gst-play-1.0 $2
+        ;;
+    search)
+        gst-inspect-1.0 | grep $2
+        ;;
+    version | v)
+        gst-launch-1.0 --version
+        ;;
+    esac
+}
+
 # usage for internal utility functions
 function usage() {
     gitclone
@@ -939,7 +1057,6 @@ function usage() {
     gofile
     gofind
     gopath
-    gotter
     gover
     gohub
     gopage
@@ -951,6 +1068,9 @@ function usage() {
     gotoken
     govnc
     pyver
+    futter
+    datter
+    gst
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
