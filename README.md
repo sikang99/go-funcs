@@ -43,6 +43,28 @@ usage: datter [update|yaml|format|web|...]
 usage: gst <info|play|search|version>
 ```
 
+To see the source of the shell functions, type like this.
+```
+$ type openpage
+openpage is the function
+openpage ()
+{
+    if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME <URL>";
+        return;
+    fi;
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        xdg-open $1;
+    else
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            open $1;
+        else
+            echo $1;
+        fi;
+    fi
+}
+```
+
 ### goto
 To change a specific directory, use `goto`.
 
