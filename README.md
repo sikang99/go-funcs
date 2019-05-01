@@ -43,8 +43,8 @@ usage: datter [update|yaml|format|web|...]
 usage: gst <info|play|search|version>
 ```
 
-To see the source of the shell functions, type like this.
-```
+To see the source of the shell function, type like this.
+```sh
 $ type openpage
 openpage is the function
 openpage ()
