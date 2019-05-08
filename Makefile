@@ -41,8 +41,8 @@ git g:
 	@echo ""
 
 git-update gu:
-	git add README.md Makefile go-funcs.sh
-	git commit -m "add gofind() to search"
+	git add README.md Makefile go-funcs.sh config/
+	git commit -m "update contents"
 	git push
 
 git-login gl:
