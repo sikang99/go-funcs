@@ -249,6 +249,11 @@ Python 3.6.5
 pip 9.0.1 from /usr/lib/python3/dist-packages (python 3.6)
 ```
 
+### gowasm
+```
+$ type gowasm
+gowasm is aliased to `GOOS=js GOARCH=wasm go'
+```
 
 ## Reference
 
