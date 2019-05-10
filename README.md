@@ -262,6 +262,8 @@ gowasm is aliased to `GOOS=js GOARCH=wasm go'
 - [How To Build Go Executables for Multiple Platforms on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04)
 - [A Good Makefile for Go](https://azer.bike/journal/a-good-makefile-for-go/)
 
+### Books
+- From Bash to Z Shell: Conquering the Command Line, Packt, 2005
 
 
 ## LICENSE
