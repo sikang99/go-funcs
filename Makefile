@@ -5,26 +5,24 @@ all: usage
 
 SCRIPT=go-funcs.sh
 EDITOR=vim
-
+# ---------------------------------------------------------------------------
 usage:
-	@echo ""
 	@echo "usage: make [edit|run|copy|git]"
-	@echo ""
-
 # ---------------------------------------------------------------------------
 edit e:
-	@echo ""
 	@echo "make (edit) [sh|readme|make]"
-	@echo ""
 
-edit-sh es:
-	$(EDITOR) $(SCRIPT)
+edit-make em:
+	$(EDITOR) Makefile
 
 edit-readme er:
 	$(EDITOR) README.md
 
-edit-make em:
-	$(EDITOR) Makefile
+edit-history eh:
+	$(EDITOR) HISTORY.md
+
+edit-sh es:
+	$(EDITOR) $(SCRIPT)
 
 # ---------------------------------------------------------------------------
 run r:
@@ -33,15 +31,12 @@ run r:
 copy cp:
 	cp ~/.bashrc go-funcs.sh
 	vi go-funcs.sh
-
 # ---------------------------------------------------------------------------
 git g:
-	@echo ""
 	@echo "make (git) [update|login|tag|status]"
-	@echo ""
 
 git-update gu:
-	git add README.md Makefile go-funcs.sh config/
+	git add Makefile *.md go-funcs.sh config/
 	git commit -m "update contents"
 	git push
 
@@ -58,5 +53,4 @@ git-tag gt:
 git-status gs:
 	git status
 	git log --oneline -5
-
 # ---------------------------------------------------------------------------
