@@ -4,6 +4,7 @@
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
 export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu
+export MANPATH=/usr/share/man:/usr/local/man
 
 alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
@@ -45,6 +46,7 @@ alias hsget="get hs"    # haskell
 alias scget="get sc"    # solidity, smart contract
 alias waget="get wa"    # wasm
 alias zgget="get zg"    # zig
+alias nmget="get nm"    # nim
 
 #alias dthub='hub-search --lang=go'
 alias dthub='hub-search --lang=dart'
@@ -138,6 +140,12 @@ if [ -d "$HOME/coding/zg/zig" ]; then
 	export ZIG_HOME=$HOME/coding/zg/zig
 	export PATH=$PATH:$ZIG_HOME/root
 	echo "Zig setting ..."
+fi
+
+if [ -d "$HOME/.nimble" ]; then
+	export NIM_HOME=$HOME/.nimble
+    export PATH=$PATH:$NIM_HOME/bin
+	echo "Nim setting ..."
 fi
 
 
@@ -483,7 +491,7 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.6), 1.12(.1)"
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.10), 1.12(.5)"
         return
     fi
 
@@ -511,15 +519,15 @@ function gover() {
     *1.11*)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.9" ]; then
+        if [ -d "go1.11.10" ]; then
             unlink go
-            ln -s go1.11.9 go
+            ln -s go1.11.10 go
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.4" ]; then
+        if [ -d "go1.12.5" ]; then
             unlink go
-            ln -s go1.12.4 go
+            ln -s go1.12.5 go
         fi
         ;;
     *1.13* | new)
@@ -802,6 +810,8 @@ function get() {
         cd $HOME/coding/zg/src ;;
     sc | smart)
         cd $HOME/coding/sc/src ;;
+    nm | nim)
+        cd $HOME/coding/nm/src ;;
     *) 
         echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|zg|sh|sc]"
         return
@@ -1006,6 +1016,11 @@ function goinfo() {
 # unset DBUS_SESSION_BUS_ADDRESS
 # exec startxfce4
 function govnc() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <info|list|play|search|version>"
+		return
+    fi
+
     case $1 in
     server | s)
         vncserver
@@ -1027,7 +1042,7 @@ function govnc() {
         ssh -L 5901:127.0.0.1:5901 -C -N -l stoney localhost
         ;;
     *)
-		echo "usage: $FUNCNAME <server:s|client:c|list:l|kill:k|ssh>"
+		echo "$1 is an unknown command"
         ;;
     esac
 }
@@ -1058,6 +1073,130 @@ function gst() {
     esac
 }
 
+# generate cert and keys
+function genkey() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <local|quic>"
+		return
+	fi
+
+    case $1 in
+    base)
+        openssl req -x509 -days 365 -newkey rsa:2048 -key key.pem -out crt.pem
+        ;;
+    local)
+        ;;
+    quic)
+        openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out key.pem
+        openssl req -x509 -days 30 \
+            -subj "/CN=DNS-over-QUIC Test" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1" \
+            -key key.pem -out crt.pem
+        ;;
+    clean)
+        rm -f *.pem
+        ;;
+    *)
+		echo "$1 is an unknown command"
+        ;;
+    esac
+}
+
+# manage pion based webrtc system
+function pion() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|home|back> - WebRTC media system, v2.0.22"
+		return
+	fi
+
+    PION="github.com/pion"
+    GOGET="go get -u"
+    case $1 in
+    update | new)
+        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,transport,rtpengine,signaler,logging}"
+        go get -u $PION/webrtc/v2
+        go get -u $PION/sdp/v2
+        go get -u $PION/ice
+        go get -u $PION/rtp $PION/rtcp $PION/srtp
+        go get -u $PION/sctp
+        go get -u $PION/dtls
+        go get -u $PION/quic
+        go get -u $PION/datachannel
+        go get -u $PION/stun
+        go get -u $PION/turn $PION/turnc
+        go get -u $PION/transport
+        go get -u $PION/rtpengine 
+        go get -u $PION/signaler
+        go get -u $PION/logging
+        ;;
+    doc)
+        case $2 in
+        esac
+        ;;
+    pkg | mod)
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
+        ls -lF $GOPATH/pkg/mod/$PION
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/sdp"
+        ls -lF $GOPATH/pkg/mod/$PION/sdp
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/webrtc"
+        ls -lF $GOPATH/pkg/mod/$PION/webrtc
+        ;;
+    src | dir)
+        ls -alF $GOPATH/src/$PION
+        ;;
+    home | goto)
+        pushd .
+        cd $GOPATH/src/$PION
+        ;;
+    back)
+        popd
+        ;;
+    open)
+        openpage https://github.com/pion/webrtc
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# manage Ethereum based blockchains
+function ether() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <update|mod|eth|quo|back> - Ethereum ecosystem"
+		return
+	fi
+
+    case $1 in
+    update | new)
+        go get -u github.com/jpmarganchase/quorum/...
+        go get -u github.com/ethereum/go-ethereum/...
+        ;;
+    pkg | mod)
+        ls -alF $GOPATH/pkg/mod/github.com/jpmorganchase
+        ls -alF $GOPATH/pkg/mod/github.com/ethereum
+        ;;
+    open)
+        openpage https://www.goquorum.com/
+        ;;
+    quo*)
+        pushd .
+        cd $GOPATH/src/github.com/jpmorganchase/quorum
+        ls -al
+        ;;
+    eth*)
+        pushd .
+        cd $GOPATH/src/github.com/ethereum/go-ethereum
+        ls -al
+        ;;
+    back)
+        popd
+        ;;
+    *)
+		echo "$1 is an unknown command"
+        ;;
+    esac
+}
+
 # usage for internal utility functions
 function usage() {
     gitclone
@@ -1083,6 +1222,7 @@ function usage() {
     futter
     datter
     gst
+    genkey
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
