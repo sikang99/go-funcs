@@ -273,6 +273,8 @@ function goto() {
 		cd $HOME/coding/media ;;
 	p2p*)
 		cd $HOME/coding/js/src/github.com/P2PSP ;;
+	momo)
+		cd $HOME/coding/cc/src/github.com/shiguredo/momo ;;
 	pion)
 		cd $HOME/coding/go/src/github.com/pion ;;
 	flutter)
@@ -287,7 +289,7 @@ function goto() {
 # script for flutter programming
 function futter() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME [open|build|force|upgrade|clean|yaml|...]"
+		echo "usage: $FUNCNAME [open|build|force|upgrade|clean|yaml|desktop|...]"
 		return
 	fi
 
@@ -306,7 +308,7 @@ function futter() {
         $HOME/coding/dt/android-studio/bin/studio.sh &
         ;;
     build)
-        flutter packages get
+        flutter packages get    # flutter pub get
         flutter build bundle
         ;;
     force)
@@ -326,6 +328,10 @@ function futter() {
         git pull
         flutter doctor
         popd
+        ;;
+    desktop)
+        export ENABLE_FLUTTER_DESKTOP=true
+        flutter precache --linux
         ;;
     yaml | y)
         vi pubspec.yaml
@@ -491,7 +497,7 @@ function xgoget() {
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.10), 1.12(.5)"
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.11), 1.12(.6)"
         return
     fi
 
@@ -519,15 +525,15 @@ function gover() {
     *1.11*)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.10" ]; then
+        if [ -d "go1.11.11" ]; then
             unlink go
-            ln -s go1.11.10 go
+            ln -s go1.11.11 go
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.5" ]; then
+        if [ -d "go1.12.6" ]; then
             unlink go
-            ln -s go1.12.5 go
+            ln -s go1.12.6 go
         fi
         ;;
     *1.13* | new)
@@ -1104,7 +1110,7 @@ function genkey() {
 # manage pion based webrtc system
 function pion() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <open|update|mod|src|home|back> - WebRTC media system, v2.0.22"
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.0.23"
 		return
 	fi
 
@@ -1112,7 +1118,7 @@ function pion() {
     GOGET="go get -u"
     case $1 in
     update | new)
-        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,transport,rtpengine,signaler,logging}"
+        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
         go get -u $PION/webrtc/v2
         go get -u $PION/sdp/v2
         go get -u $PION/ice
@@ -1120,17 +1126,17 @@ function pion() {
         go get -u $PION/sctp
         go get -u $PION/dtls
         go get -u $PION/quic
-        go get -u $PION/datachannel
         go get -u $PION/stun
         go get -u $PION/turn $PION/turnc
+        go get -u $PION/mdns
+        go get -u $PION/datachannel
         go get -u $PION/transport
         go get -u $PION/rtpengine 
         go get -u $PION/signaler
         go get -u $PION/logging
         ;;
     doc)
-        case $2 in
-        esac
+        go doc $GOPATH/src/$PION/$2
         ;;
     pkg | mod)
         echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
@@ -1151,7 +1157,33 @@ function pion() {
         popd
         ;;
     open)
-        openpage https://github.com/pion/webrtc
+        openpage https://$PION/webrtc
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# webrtc native client
+function momo() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|home|back> - WebRTC native client"
+		return
+	fi
+
+    MOMO="github.com/shiguredo/momo"
+    case $1 in
+    update | new)
+        ;;
+    move)
+        mv ~/다운로드/momo*.gz $HOME/coding/cc/src/$MOMO/releases
+        ;;
+    home | goto)
+        cd $HOME/coding/cc/src/$MOMO
+        ;;
+    open)
+        openpage https://$MOMO
         ;;
     *)
 		echo "$FUNCNAME> '$1' is an unknown command"
@@ -1193,6 +1225,75 @@ function ether() {
         ;;
     *)
 		echo "$1 is an unknown command"
+        ;;
+    esac
+}
+
+# WebAssembly script for programming
+function wasm() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <bin|install|open|update>"
+		return
+    fi
+
+    case $1 in
+    bin)
+        echo "wasm:/home/stoney/.cargo/bin/> ls -CF"
+        ls -CF /home/stoney/.cargo/bin/
+        echo "wasm:/usr/local/bin> ls -CF"
+        ls -CF /usr/local/bin
+        ;;
+    install)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (install) <wasm-pack|emsdk>"
+		    return
+        fi
+        case $2 in
+        emsdk)
+            git clone https://github.com/juj/emsdk.git
+            cd emsdk
+            ./emsdk install sdk-incoming-64bit binaryen-master-64bit
+            ./emsdk activate sdk-incoming-64bit binaryen-master-64bit
+            source ./emsdk_env.sh
+            ;;
+        wasm-pack)
+            curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+            ;;
+        esac
+        ;;
+    open)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (install) <wabt|git|home>"
+		    return
+        fi
+        case $2 in
+        wabt)
+            openpage https://nicedoc.io/WebAssembly/wabt
+            ;;
+        git*)
+            openpage https://github.com/WebAssembly
+            ;;
+        home)
+            openpage https://webassembly.org
+        esac
+        ;;
+    update)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (update) <rust|golang>"
+		    return
+        fi
+        case $2 in
+        rust)
+            rustup toolchain list
+            rustup update
+            rustc --version
+            cargo --version
+            ;;
+        golang)
+            go version
+            alias gowasm='GOOS=js GOARCH=wasm go'
+            ;;
+        esac
         ;;
     esac
 }
