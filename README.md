@@ -18,6 +18,7 @@ $ source ./go-funcs.sh # or include . <path>/go-funcs.sh in ~/.bashrc
 To see help message of usage after installation, 
 
 ```sh
+usage: setlang [kr|en]
 usage: gitclone <package folder> on {github,gitlab}.com
 usage: gitupdate <.>
 usage: openpage <URL>
@@ -27,20 +28,24 @@ usage: get [<language> <url of package>] are required.
 usage: gofile <filename> [path to start]
 usage: gofind <search string> [path to start]
 usage: gopath <package name>
-usage: gover <go version>: 1.9(.7), 1.10(.8), 1.11(.6), 1.12(.1)
+usage: gover <go version>: 1.9(.7), 1.10(.8), 1.11(.12), 1.12(.7)
 usage: gohub <search text> written golng in github.com
-usage: gopage <.|url|github repo path>
+usage: gopage <.|url|github path>
 usage: gomod [auto|on|off|<command>...]
 usage: gopkg [mod|src|vendor] [<package>]
 usage: gotrd [<all|go|rs|js|py|dt|dk|week|month>:go]
 usage: goport [<port number>|ip|scan|axis]
 usage: godkr <compose|machine|layer|open|clean|run> <params...>
 usage: gotoken <coin:c|market:m|binance:b|btc|eth|eos>
-usage: govnc <server:s|client:c|list:l|kill:k|ssh>
+usage: govnc <info|list|play|search|version>
 usage: pyver <2|3>
-usage: futter [open|build|force|upgrade|clean|yaml|...]
+usage: futter [open|build|force|upgrade|clean|yaml|desktop|...]
 usage: datter [update|yaml|format|web|...]
-usage: gst <info|play|search|version>
+usage: gst <info|list|play|search|version>
+usage: genkey <local|quic>
+usage: kube <start|stop|info> - Kubenates v1.15.0
+usage: pion <open|update|mod|src|doc|home|back> - WebRTC media system, v2.0.23
+usage: wasm <copy|bin|install|open|run|update>
 ```
 
 To see the source of the shell function, type like this.
