@@ -21,13 +21,14 @@ alias hchrome='chrome --headless'
 
 alias cls='clear'
 alias d='clear && ls -CF'
-alias lr='tree'
-alias lr2='tree -L 2'
-alias lr3='tree -L 3'
-alias lrm='tree | less'
+alias lr='tree -a'
+alias lr2='tree -aL 2'
+alias lr3='tree -aL 3'
+alias lrm='tree -a | less'
 alias dirs='dirs -v'
 alias nls='sudo netstat -ntlp | grep LISTEN'
 
+alias ev='vi Vagrantfile'
 alias ed='vi Dockerfile'
 alias em='vi Makefile'
 alias er='vi README.md'
@@ -47,6 +48,7 @@ alias scget="get sc"    # solidity, smart contract
 alias waget="get wa"    # wasm
 alias zgget="get zg"    # zig
 alias nmget="get nm"    # nim
+alias elget="get el"    # erlang, elixir
 
 #alias dthub='hub-search --lang=go'
 alias dthub='hub-search --lang=dart'
@@ -72,6 +74,12 @@ if [ -d "$HOME/coding/go" ]; then
     #export GOPROXY=http://127.0.0.1:3000
     alias gowasm='GOOS=js GOARCH=wasm go'
 fi
+
+if [ -d "/usr/local/tinygo" ]; then
+	export PATH=$PATH:/usr/local/tinygo/bin
+	echo "`tinygo version` setting ..."
+fi
+
 
 if [ -d "$HOME/.cargo" ]; then
 	#source $HOME/.cargo/env
@@ -112,16 +120,32 @@ if [ -d "$HOME/coding/dt" ]; then
 	echo "Dart & Flutter setting ..."
 fi
 
-if [ -x "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
-	export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
+if [ -d "/usr/lib/llvm-8" ]; then
+	export LLVM_HOME=/usr/lib/llvm-8
+    export PATH=$PATH:$LLVM_HOME/bin
+	printf "LLVM version 8.0.0 setting ...\n"
+fi
+
+export NODE=$HOME/coding/cc/src/stoney/nodejs/node
+if [ -d $NODE ]; then
+	export PATH=$PATH:$NODE/bin
+	echo "Node.js `node --version` setting ..."
+fi
+
+export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
+if [ -d $EMDSK ]; then
 	export EM_CONFIG=/home/stoney/.emscripten
-	export LLVM_ROOT=$EMSDK/clang/e1.38.15_64bit
-	export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/clang/e1.38.15_64bit/optimizer
-	export BINARYEN_ROOT=$EMSDK/clang/e1.38.15_64bit/binaryen
-	export EMSDK_NODE=$EMSDK/node/8.9.1_64bit/bin/node
-	export EMSCRIPTEN=$EMSDK/emscripten/1.38.15
-	export PATH=$PATH:$EMSDK:$LLVM_ROOT:$EMSDK/node/8.9.1_64bit/bin:$EMSCRIPTEN
-	echo "EMSDK setting ..."
+	export LLVM_ROOT=$EMSDK/fastcomp
+	export EMSCRIPTEN=$EMSDK/fastcomp/emscripten
+	#export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/fastcomp/bin/optimizer
+    if [ -d $NODE ]; then
+	    export EMSDK_NODE=$NODE
+	    export PATH=$PATH:$LLVM_ROOT:$EMSCRIPTEN
+    else
+	    export EMSDK_NODE=$EMSDK/node
+	    export PATH=$PATH:$LLVM_ROOT:$EMSCRIPTEN:$EMSDK_NODE/bin
+    fi
+	echo "EMSDK 1.38.40 setting ..."
 fi
 
 if [ -d "$HOME/.bazel" ]; then
@@ -146,6 +170,25 @@ if [ -d "$HOME/.nimble" ]; then
 	export NIM_HOME=$HOME/.nimble
     export PATH=$PATH:$NIM_HOME/bin
 	echo "Nim setting ..."
+fi
+
+if [ -d "$HOME/filament" ]; then
+	export FILA_HOME=$HOME/filament
+    export PATH=$PATH:$FILA_HOME/bin
+	echo "Filament 1.3.0 setting ..."
+fi
+
+if [ -d "$HOME/.ops" ]; then
+    export OPS_DIR="$HOME/.ops"
+    export PATH="$HOME/.ops/bin:$PATH"
+	echo "OPS `ops version` setting ..."
+fi
+
+if [ -d "$HOME/.wasmer" ]; then
+    export WASMER_DIR="$HOME/.wasmer"
+    export WASMER_CACHE_DIR="$WASMER_DIR/cache"
+    export PATH="$WASMER_DIR/bin:$WASMER_DIR/globals/wapm_packages/.bin:$PATH"
+	echo "`wasmer  -V` setting ..."
 fi
 
 
@@ -229,6 +272,10 @@ function goto() {
 		cd $GOPATH/pkg/mod ;;
 	wrk | work)
 		cd $GOPATH/wrk ;;
+	team*)
+		cd $GOPATH/src/github.com/teamgrit-lab ;;
+	cojam*)
+		cd $GOPATH/src/github.com/teamgrit-lab/cojam ;;
 	stoney)
 		cd $GOPATH/src/stoney ;;
 	webcam)
@@ -245,7 +292,11 @@ function goto() {
 		cd $HOME/coding/cc/src/stoney/openvino ;;
 	webrtc | rtc)
 		cd $HOME/coding/cc/src/github.com/aisouard/libwebrtc ;;
-	make)
+	janus)
+		cd $HOME/coding/cc/src/github.com/meetecho ;;
+    fila*)
+		cd $HOME/coding/cc/src/github.com/google ;;
+	make*)
 		cd $HOME/coding/sh/src/stoney/makefiles ;;
 	go | golang)
 		cd $HOME/coding/go/src ;;
@@ -399,11 +450,11 @@ function gofind() {
 		return
 	fi
 
-    # search with string inclusion
+    # search with string inclusion starting from the given folder
 	if [ $2 ]; then
-        find $2 -name *$1* -print
+        find $2 -name "*$1*" -print
     else
-        find . -name *$1* -print
+        find . -name "*$1*" -print
     fi
 }
 
@@ -494,10 +545,29 @@ function xgoget() {
     export GO111MODULE=on
 }
 
+
+function setlang() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME [kr|en]"
+        return
+    fi
+    case $1 in 
+    kr)
+        export LANG=ko_KR.UTF-8
+        ;;
+    en)
+        export LANG=en_US.UTF-8
+        ;;
+    *)
+        echo "$FUNCNAME> '$1' is unknown lang type."
+        ;;
+    esac
+}
+
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.11), 1.12(.6)"
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.12), 1.12(.7)"
         return
     fi
 
@@ -525,15 +595,15 @@ function gover() {
     *1.11*)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.11" ]; then
+        if [ -d "go1.11.12" ]; then
             unlink go
-            ln -s go1.11.11 go
+            ln -s go1.11.12 go
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.6" ]; then
+        if [ -d "go1.12.7" ]; then
             unlink go
-            ln -s go1.12.6 go
+            ln -s go1.12.7 go
         fi
         ;;
     *1.13* | new)
@@ -627,6 +697,8 @@ function gomod() {
         ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
+    clobber)
+        go clean -modcache ;;
     *)
         go $@ ;;
     esac
@@ -710,7 +782,7 @@ function gohub() {
 # show web page for the current directory
 function gopage() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <.|url|github repo path>"
+		echo "usage: $FUNCNAME <.|url|github path>"
 		return
 	fi
     case $1 in
@@ -727,7 +799,7 @@ function gopage() {
         echo $1
         xdg-open $1 >/dev/null
         ;;
-    github.com*)
+    *.com*)
         xdg-open https://$1 >/dev/null
         ;;
     *)
@@ -818,8 +890,10 @@ function get() {
         cd $HOME/coding/sc/src ;;
     nm | nim)
         cd $HOME/coding/nm/src ;;
+    el | erlang | elixir)
+        cd $HOME/coding/el/src ;;
     *) 
-        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|zg|sh|sc]"
+        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|zg|sh|sc|el]"
         return
         ;;
     esac
@@ -1107,6 +1181,37 @@ function genkey() {
     esac
 }
 
+# mange kubenates cluster
+function kube() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <start|stop|info> - Kubenates v1.15.0"
+		return
+	fi
+
+    CNAME=example
+    case $1 in
+    start)
+        minikube start -p $CNAME
+        ;;
+    stop)
+        minikube delete -p $CNAME
+        ;;
+    info)
+        case $2 in
+        dump)
+            kubectl cluster-info dump | less
+            ;;
+        *)
+            kubectl cluster-info
+            ;;
+        esac
+        ;;
+    version)
+        kubectl version
+        ;;
+    esac
+}
+
 # manage pion based webrtc system
 function pion() {
 	if [ $# = 0 ]; then
@@ -1119,21 +1224,21 @@ function pion() {
     case $1 in
     update | new)
         echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
-        go get -u $PION/webrtc/v2
-        go get -u $PION/sdp/v2
-        go get -u $PION/ice
-        go get -u $PION/rtp $PION/rtcp $PION/srtp
-        go get -u $PION/sctp
-        go get -u $PION/dtls
-        go get -u $PION/quic
-        go get -u $PION/stun
-        go get -u $PION/turn $PION/turnc
-        go get -u $PION/mdns
-        go get -u $PION/datachannel
-        go get -u $PION/transport
-        go get -u $PION/rtpengine 
-        go get -u $PION/signaler
-        go get -u $PION/logging
+        go get $PION/webrtc/v2
+        go get $PION/sdp/v2
+        go get $PION/ice
+        go get $PION/rtp $PION/rtcp $PION/srtp
+        go get $PION/sctp
+        go get $PION/dtls
+        go get $PION/quic
+        go get $PION/stun
+        go get $PION/turn $PION/turnc
+        go get $PION/mdns
+        go get $PION/datachannel
+        go get $PION/transport
+        go get $PION/rtpengine 
+        go get $PION/signaler
+        go get $PION/logging
         ;;
     doc)
         go doc $GOPATH/src/$PION/$2
@@ -1232,11 +1337,15 @@ function ether() {
 # WebAssembly script for programming
 function wasm() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <bin|install|open|update>"
+		echo "usage: $FUNCNAME <copy|bin|install|open|run|update>"
 		return
     fi
 
     case $1 in
+    copy)
+        cp $GOROOT/misc/wasm/wasm_exec.* .
+        ls -al wasm_exec.*
+        ;;
     bin)
         echo "wasm:/home/stoney/.cargo/bin/> ls -CF"
         ls -CF /home/stoney/.cargo/bin/
@@ -1263,18 +1372,42 @@ function wasm() {
         ;;
     open)
 	    if [ $# = 1 ]; then
-            echo "> $FUNCNAME (install) <wabt|git|home>"
+            echo "> $FUNCNAME (install) <emscrpten|bindgen|wabt|git|home>"
 		    return
         fi
         case $2 in
+        emscripten)
+            openpage https://emscripten.org/
+            ;;
+        binaryen)
+            openpage https://github.com/WebAssembly/binaryen
+            ;;
+        bindgen)
+            openpage https://rustwasm.github.io/docs/wasm-bindgen/
+            openpage https://github.com/rustwasm/wasm-bindgen
+            ;;
         wabt)
             openpage https://nicedoc.io/WebAssembly/wabt
-            ;;
-        git*)
-            openpage https://github.com/WebAssembly
+            openpage https://github.com/WebAssembly/wabt
             ;;
         home)
             openpage https://webassembly.org
+            openpage https://github.com/WebAssembly
+        esac
+        ;;
+    list)
+        echo "https://github.com/mbasso/wasm-worker"
+        ;;
+    run)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (run) <emcc>"
+		    return
+        fi
+        case $2 in
+        emcc)
+            docker pull trzeci/emscripten
+            docker run --rm -v $PWD:/src trzeci/emscripten emcc $3 $4 $5 $6 $7 $8 $9
+            ;;
         esac
         ;;
     update)
@@ -1285,6 +1418,7 @@ function wasm() {
         case $2 in
         rust)
             rustup toolchain list
+            rustup target list
             rustup update
             rustc --version
             cargo --version
@@ -1300,6 +1434,7 @@ function wasm() {
 
 # usage for internal utility functions
 function usage() {
+    setlang
     gitclone
     gitupdate
     openpage
@@ -1324,6 +1459,16 @@ function usage() {
     datter
     gst
     genkey
+    kube
+    pion
+    wasm
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
+# OPS config
+export OPS_DIR="$HOME/.ops"
+export PATH="$HOME/.ops/bin:$PATH"
+
+# Wasmer
+export WASMER_DIR="/home/stoney/.wasmer"
+[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"  # This loads wasmer
