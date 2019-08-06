@@ -18,7 +18,8 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'tomlion/vim-solidity'
-Plug 'z0mbie42/vim-san'
+"Plug 'z0mbie42/vim-san'
+Plug 'pangloss/vim-javascript'
 call plug#end()
 
 """"""""""""""""""""""
