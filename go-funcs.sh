@@ -30,6 +30,7 @@ alias nls='sudo netstat -ntlp | grep LISTEN'
 
 alias ev='vi Vagrantfile'
 alias ed='vi Dockerfile'
+alias edm='vi Dockerfile.multi'
 alias em='vi Makefile'
 alias er='vi README.md'
 alias ey='vi *.y*'
@@ -548,20 +549,21 @@ function xgoget() {
 
 function setlang() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME [kr|en]"
+        echo "usage: $FUNCNAME [kr|en] ($LANG)"
         return
     fi
     case $1 in 
-    kr)
+    kr | ko*)
         export LANG=ko_KR.UTF-8
         ;;
-    en)
+    en*)
         export LANG=en_US.UTF-8
         ;;
     *)
         echo "$FUNCNAME> '$1' is unknown lang type."
         ;;
     esac
+    echo "$FUNCNAME> LANG=$LANG"
 }
 
 # Select a go version to use among installed
@@ -849,7 +851,7 @@ function gitupdate() {
         git pull origin master
         ;;
     *)
-        echo "$FUNCNAME> $1 is unkown option"
+        echo "$FUNCNAME> $1 is an unkown option"
         return
         ;;
     esac
@@ -1224,6 +1226,7 @@ function pion() {
     case $1 in
     update | new)
         echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
+        export GO111MODULE=on
         go get $PION/webrtc/v2
         go get $PION/sdp/v2
         go get $PION/ice

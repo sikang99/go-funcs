@@ -122,6 +122,7 @@ fi
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/snap/bin:/usr/local/bin
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
 export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu
+export MANPATH=/usr/share/man:/usr/local/man
 
 alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
@@ -138,14 +139,16 @@ alias hchrome='chrome --headless'
 
 alias cls='clear'
 alias d='clear && ls -CF'
-alias lr='tree'
-alias lr2='tree -L 2'
-alias lr3='tree -L 3'
-alias lrm='tree | less'
+alias lr='tree -a'
+alias lr2='tree -aL 2'
+alias lr3='tree -aL 3'
+alias lrm='tree -a | less'
 alias dirs='dirs -v'
 alias nls='sudo netstat -ntlp | grep LISTEN'
 
+alias ev='vi Vagrantfile'
 alias ed='vi Dockerfile'
+alias edm='vi Dockerfile.multi'
 alias em='vi Makefile'
 alias er='vi README.md'
 alias ey='vi *.y*'
@@ -163,6 +166,8 @@ alias hsget="get hs"    # haskell
 alias scget="get sc"    # solidity, smart contract
 alias waget="get wa"    # wasm
 alias zgget="get zg"    # zig
+alias nmget="get nm"    # nim
+alias elget="get el"    # erlang, elixir
 
 #alias dthub='hub-search --lang=go'
 alias dthub='hub-search --lang=dart'
@@ -188,6 +193,12 @@ if [ -d "$HOME/coding/go" ]; then
     #export GOPROXY=http://127.0.0.1:3000
     alias gowasm='GOOS=js GOARCH=wasm go'
 fi
+
+if [ -d "/usr/local/tinygo" ]; then
+	export PATH=$PATH:/usr/local/tinygo/bin
+	echo "`tinygo version` setting ..."
+fi
+
 
 if [ -d "$HOME/.cargo" ]; then
 	#source $HOME/.cargo/env
@@ -228,16 +239,32 @@ if [ -d "$HOME/coding/dt" ]; then
 	echo "Dart & Flutter setting ..."
 fi
 
-if [ -x "$HOME/coding/cc/src/stoney/emsdk-build/emsdk" ]; then
-	export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
+if [ -d "/usr/lib/llvm-8" ]; then
+	export LLVM_HOME=/usr/lib/llvm-8
+    export PATH=$PATH:$LLVM_HOME/bin
+	printf "LLVM version 8.0.0 setting ...\n"
+fi
+
+export NODE=$HOME/coding/cc/src/stoney/nodejs/node
+if [ -d $NODE ]; then
+	export PATH=$PATH:$NODE/bin
+	echo "Node.js `node --version` setting ..."
+fi
+
+export EMSDK=$HOME/coding/cc/src/stoney/emsdk-build/emsdk
+if [ -d $EMDSK ]; then
 	export EM_CONFIG=/home/stoney/.emscripten
-	export LLVM_ROOT=$EMSDK/clang/e1.38.15_64bit
-	export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/clang/e1.38.15_64bit/optimizer
-	export BINARYEN_ROOT=$EMSDK/clang/e1.38.15_64bit/binaryen
-	export EMSDK_NODE=$EMSDK/node/8.9.1_64bit/bin/node
-	export EMSCRIPTEN=$EMSDK/emscripten/1.38.15
-	export PATH=$PATH:$EMSDK:$LLVM_ROOT:$EMSDK/node/8.9.1_64bit/bin:$EMSCRIPTEN
-	echo "EMSDK setting ..."
+	export LLVM_ROOT=$EMSDK/fastcomp
+	export EMSCRIPTEN=$EMSDK/fastcomp/emscripten
+	#export EMSCRIPTEN_NATIVE_OPTIMIZER=$EMSDK/fastcomp/bin/optimizer
+    if [ -d $NODE ]; then
+	    export EMSDK_NODE=$NODE
+	    export PATH=$PATH:$LLVM_ROOT:$EMSCRIPTEN
+    else
+	    export EMSDK_NODE=$EMSDK/node
+	    export PATH=$PATH:$LLVM_ROOT:$EMSCRIPTEN:$EMSDK_NODE/bin
+    fi
+	echo "EMSDK 1.38.40 setting ..."
 fi
 
 if [ -d "$HOME/.bazel" ]; then
@@ -256,6 +283,31 @@ if [ -d "$HOME/coding/zg/zig" ]; then
 	export ZIG_HOME=$HOME/coding/zg/zig
 	export PATH=$PATH:$ZIG_HOME/root
 	echo "Zig setting ..."
+fi
+
+if [ -d "$HOME/.nimble" ]; then
+	export NIM_HOME=$HOME/.nimble
+    export PATH=$PATH:$NIM_HOME/bin
+	echo "Nim setting ..."
+fi
+
+if [ -d "$HOME/filament" ]; then
+	export FILA_HOME=$HOME/filament
+    export PATH=$PATH:$FILA_HOME/bin
+	echo "Filament 1.3.0 setting ..."
+fi
+
+if [ -d "$HOME/.ops" ]; then
+    export OPS_DIR="$HOME/.ops"
+    export PATH="$HOME/.ops/bin:$PATH"
+	echo "OPS `ops version` setting ..."
+fi
+
+if [ -d "$HOME/.wasmer" ]; then
+    export WASMER_DIR="$HOME/.wasmer"
+    export WASMER_CACHE_DIR="$WASMER_DIR/cache"
+    export PATH="$WASMER_DIR/bin:$WASMER_DIR/globals/wapm_packages/.bin:$PATH"
+	echo "`wasmer  -V` setting ..."
 fi
 
 
@@ -339,6 +391,10 @@ function goto() {
 		cd $GOPATH/pkg/mod ;;
 	wrk | work)
 		cd $GOPATH/wrk ;;
+	team*)
+		cd $GOPATH/src/github.com/teamgrit-lab ;;
+	cojam*)
+		cd $GOPATH/src/github.com/teamgrit-lab/cojam ;;
 	stoney)
 		cd $GOPATH/src/stoney ;;
 	webcam)
@@ -355,7 +411,11 @@ function goto() {
 		cd $HOME/coding/cc/src/stoney/openvino ;;
 	webrtc | rtc)
 		cd $HOME/coding/cc/src/github.com/aisouard/libwebrtc ;;
-	make)
+	janus)
+		cd $HOME/coding/cc/src/github.com/meetecho ;;
+    fila*)
+		cd $HOME/coding/cc/src/github.com/google ;;
+	make*)
 		cd $HOME/coding/sh/src/stoney/makefiles ;;
 	go | golang)
 		cd $HOME/coding/go/src ;;
@@ -383,6 +443,8 @@ function goto() {
 		cd $HOME/coding/media ;;
 	p2p*)
 		cd $HOME/coding/js/src/github.com/P2PSP ;;
+	momo)
+		cd $HOME/coding/cc/src/github.com/shiguredo/momo ;;
 	pion)
 		cd $HOME/coding/go/src/github.com/pion ;;
 	flutter)
@@ -397,7 +459,7 @@ function goto() {
 # script for flutter programming
 function futter() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME [open|build|force|upgrade|clean|yaml|...]"
+		echo "usage: $FUNCNAME [open|build|force|upgrade|clean|yaml|desktop|...]"
 		return
 	fi
 
@@ -416,7 +478,7 @@ function futter() {
         $HOME/coding/dt/android-studio/bin/studio.sh &
         ;;
     build)
-        flutter packages get
+        flutter packages get    # flutter pub get
         flutter build bundle
         ;;
     force)
@@ -436,6 +498,10 @@ function futter() {
         git pull
         flutter doctor
         popd
+        ;;
+    desktop)
+        export ENABLE_FLUTTER_DESKTOP=true
+        flutter precache --linux
         ;;
     yaml | y)
         vi pubspec.yaml
@@ -503,11 +569,11 @@ function gofind() {
 		return
 	fi
 
-    # search with string inclusion
+    # search with string inclusion starting from the given folder
 	if [ $2 ]; then
-        find $2 -name *$1* -print
+        find $2 -name "*$1*" -print
     else
-        find . -name *$1* -print
+        find . -name "*$1*" -print
     fi
 }
 
@@ -598,10 +664,30 @@ function xgoget() {
     export GO111MODULE=on
 }
 
+
+function setlang() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME [kr|en] ($LANG)"
+        return
+    fi
+    case $1 in 
+    kr | ko*)
+        export LANG=ko_KR.UTF-8
+        ;;
+    en*)
+        export LANG=en_US.UTF-8
+        ;;
+    *)
+        echo "$FUNCNAME> '$1' is unknown lang type."
+        ;;
+    esac
+    echo "$FUNCNAME> LANG=$LANG"
+}
+
 # Select a go version to use among installed
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.6), 1.12(.1)"
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.12), 1.12(.7)"
         return
     fi
 
@@ -629,15 +715,15 @@ function gover() {
     *1.11*)
         #GO111MODULE={auto|on|off}
         #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.9" ]; then
+        if [ -d "go1.11.12" ]; then
             unlink go
-            ln -s go1.11.9 go
+            ln -s go1.11.12 go
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.4" ]; then
+        if [ -d "go1.12.7" ]; then
             unlink go
-            ln -s go1.12.4 go
+            ln -s go1.12.7 go
         fi
         ;;
     *1.13* | new)
@@ -731,6 +817,8 @@ function gomod() {
         ;;
     clean)
         rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
+    clobber)
+        go clean -modcache ;;
     *)
         go $@ ;;
     esac
@@ -814,7 +902,7 @@ function gohub() {
 # show web page for the current directory
 function gopage() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <.|url|github repo path>"
+		echo "usage: $FUNCNAME <.|url|github path>"
 		return
 	fi
     case $1 in
@@ -831,7 +919,7 @@ function gopage() {
         echo $1
         xdg-open $1 >/dev/null
         ;;
-    github.com*)
+    *.com*)
         xdg-open https://$1 >/dev/null
         ;;
     *)
@@ -920,8 +1008,12 @@ function get() {
         cd $HOME/coding/zg/src ;;
     sc | smart)
         cd $HOME/coding/sc/src ;;
+    nm | nim)
+        cd $HOME/coding/nm/src ;;
+    el | erlang | elixir)
+        cd $HOME/coding/el/src ;;
     *) 
-        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|zg|sh|sc]"
+        echo "$FUNCNAME> $1 is the unknown language type in [go|rs|py|js|jv|dt|hs|cc|wa|zg|sh|sc|el]"
         return
         ;;
     esac
@@ -1124,6 +1216,11 @@ function goinfo() {
 # unset DBUS_SESSION_BUS_ADDRESS
 # exec startxfce4
 function govnc() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <info|list|play|search|version>"
+		return
+    fi
+
     case $1 in
     server | s)
         vncserver
@@ -1145,7 +1242,7 @@ function govnc() {
         ssh -L 5901:127.0.0.1:5901 -C -N -l stoney localhost
         ;;
     *)
-		echo "usage: $FUNCNAME <server:s|client:c|list:l|kill:k|ssh>"
+		echo "$1 is an unknown command"
         ;;
     esac
 }
@@ -1176,8 +1273,289 @@ function gst() {
     esac
 }
 
+# generate cert and keys
+function genkey() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <local|quic>"
+		return
+	fi
+
+    case $1 in
+    base)
+        openssl req -x509 -days 365 -newkey rsa:2048 -key key.pem -out crt.pem
+        ;;
+    local)
+        ;;
+    quic)
+        openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out key.pem
+        openssl req -x509 -days 30 \
+            -subj "/CN=DNS-over-QUIC Test" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1" \
+            -key key.pem -out crt.pem
+        ;;
+    clean)
+        rm -f *.pem
+        ;;
+    *)
+		echo "$1 is an unknown command"
+        ;;
+    esac
+}
+
+# mange kubenates cluster
+function kube() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <start|stop|info> - Kubenates v1.15.0"
+		return
+	fi
+
+    CNAME=example
+    case $1 in
+    start)
+        minikube start -p $CNAME
+        ;;
+    stop)
+        minikube delete -p $CNAME
+        ;;
+    info)
+        case $2 in
+        dump)
+            kubectl cluster-info dump | less
+            ;;
+        *)
+            kubectl cluster-info
+            ;;
+        esac
+        ;;
+    version)
+        kubectl version
+        ;;
+    esac
+}
+
+# manage pion based webrtc system
+function pion() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.0.23"
+		return
+	fi
+
+    PION="github.com/pion"
+    GOGET="go get -u"
+    case $1 in
+    update | new)
+        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
+        export GO111MODULE=on
+        go get $PION/webrtc/v2
+        go get $PION/sdp/v2
+        go get $PION/ice
+        go get $PION/rtp $PION/rtcp $PION/srtp
+        go get $PION/sctp
+        go get $PION/dtls
+        go get $PION/quic
+        go get $PION/stun
+        go get $PION/turn $PION/turnc
+        go get $PION/mdns
+        go get $PION/datachannel
+        go get $PION/transport
+        go get $PION/rtpengine 
+        go get $PION/signaler
+        go get $PION/logging
+        ;;
+    doc)
+        go doc $GOPATH/src/$PION/$2
+        ;;
+    pkg | mod)
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
+        ls -lF $GOPATH/pkg/mod/$PION
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/sdp"
+        ls -lF $GOPATH/pkg/mod/$PION/sdp
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/webrtc"
+        ls -lF $GOPATH/pkg/mod/$PION/webrtc
+        ;;
+    src | dir)
+        ls -alF $GOPATH/src/$PION
+        ;;
+    home | goto)
+        pushd .
+        cd $GOPATH/src/$PION
+        ;;
+    back)
+        popd
+        ;;
+    open)
+        openpage https://$PION/webrtc
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# webrtc native client
+function momo() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|home|back> - WebRTC native client"
+		return
+	fi
+
+    MOMO="github.com/shiguredo/momo"
+    case $1 in
+    update | new)
+        ;;
+    move)
+        mv ~/다운로드/momo*.gz $HOME/coding/cc/src/$MOMO/releases
+        ;;
+    home | goto)
+        cd $HOME/coding/cc/src/$MOMO
+        ;;
+    open)
+        openpage https://$MOMO
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# manage Ethereum based blockchains
+function ether() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <update|mod|eth|quo|back> - Ethereum ecosystem"
+		return
+	fi
+
+    case $1 in
+    update | new)
+        go get -u github.com/jpmarganchase/quorum/...
+        go get -u github.com/ethereum/go-ethereum/...
+        ;;
+    pkg | mod)
+        ls -alF $GOPATH/pkg/mod/github.com/jpmorganchase
+        ls -alF $GOPATH/pkg/mod/github.com/ethereum
+        ;;
+    open)
+        openpage https://www.goquorum.com/
+        ;;
+    quo*)
+        pushd .
+        cd $GOPATH/src/github.com/jpmorganchase/quorum
+        ls -al
+        ;;
+    eth*)
+        pushd .
+        cd $GOPATH/src/github.com/ethereum/go-ethereum
+        ls -al
+        ;;
+    back)
+        popd
+        ;;
+    *)
+		echo "$1 is an unknown command"
+        ;;
+    esac
+}
+
+# WebAssembly script for programming
+function wasm() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <copy|bin|install|open|run|update>"
+		return
+    fi
+
+    case $1 in
+    copy)
+        cp $GOROOT/misc/wasm/wasm_exec.* .
+        ls -al wasm_exec.*
+        ;;
+    bin)
+        echo "wasm:/home/stoney/.cargo/bin/> ls -CF"
+        ls -CF /home/stoney/.cargo/bin/
+        echo "wasm:/usr/local/bin> ls -CF"
+        ls -CF /usr/local/bin
+        ;;
+    install)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (install) <wasm-pack|emsdk>"
+		    return
+        fi
+        case $2 in
+        emsdk)
+            git clone https://github.com/juj/emsdk.git
+            cd emsdk
+            ./emsdk install sdk-incoming-64bit binaryen-master-64bit
+            ./emsdk activate sdk-incoming-64bit binaryen-master-64bit
+            source ./emsdk_env.sh
+            ;;
+        wasm-pack)
+            curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+            ;;
+        esac
+        ;;
+    open)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (install) <emscrpten|bindgen|wabt|git|home>"
+		    return
+        fi
+        case $2 in
+        emscripten)
+            openpage https://emscripten.org/
+            ;;
+        binaryen)
+            openpage https://github.com/WebAssembly/binaryen
+            ;;
+        bindgen)
+            openpage https://rustwasm.github.io/docs/wasm-bindgen/
+            openpage https://github.com/rustwasm/wasm-bindgen
+            ;;
+        wabt)
+            openpage https://nicedoc.io/WebAssembly/wabt
+            openpage https://github.com/WebAssembly/wabt
+            ;;
+        home)
+            openpage https://webassembly.org
+            openpage https://github.com/WebAssembly
+        esac
+        ;;
+    list)
+        echo "https://github.com/mbasso/wasm-worker"
+        ;;
+    run)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (run) <emcc>"
+		    return
+        fi
+        case $2 in
+        emcc)
+            docker pull trzeci/emscripten
+            docker run --rm -v $PWD:/src trzeci/emscripten emcc $3 $4 $5 $6 $7 $8 $9
+            ;;
+        esac
+        ;;
+    update)
+	    if [ $# = 1 ]; then
+            echo "> $FUNCNAME (update) <rust|golang>"
+		    return
+        fi
+        case $2 in
+        rust)
+            rustup toolchain list
+            rustup target list
+            rustup update
+            rustc --version
+            cargo --version
+            ;;
+        golang)
+            go version
+            alias gowasm='GOOS=js GOARCH=wasm go'
+            ;;
+        esac
+        ;;
+    esac
+}
+
 # usage for internal utility functions
 function usage() {
+    setlang
     gitclone
     gitupdate
     openpage
@@ -1201,6 +1579,17 @@ function usage() {
     futter
     datter
     gst
+    genkey
+    kube
+    pion
+    wasm
 }
 # CAUTION: don't use gvm as following
 #[[ -s "/home/stoney/.gvm/scripts/gvm" ]] && source "/home/stoney/.gvm/scripts/gvm"
+# OPS config
+export OPS_DIR="$HOME/.ops"
+export PATH="$HOME/.ops/bin:$PATH"
+
+# Wasmer
+export WASMER_DIR="/home/stoney/.wasmer"
+[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"  # This loads wasmer
