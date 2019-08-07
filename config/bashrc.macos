@@ -1,0 +1,500 @@
+#
+# ~/.bashrc for macos
+#
+export PS1="\[\e[36;1m\]\u@\[\e[32;1m\]\h:\[\e[31;1m\]\w> \[\e[0m\]"
+
+alias lr='tree | less'
+alias l2='tree -L 2'
+alias l3='tree -L 3'
+alias ll='ls -al'
+alias ls='ls -aF'
+alias dir='clear; ls -aCF'
+alias cls='clear'
+alias ls='LSCOLORS=gxfxcxdxbxexexabagacad /bin/ls -bFHGLOPW'
+
+alias ed='vi Dockerfile'
+alias em='vi Makefile'
+alias er='vi README.md'
+
+alias bashrc='vi ~/.bashrc; source ~/.bashrc'
+alias vimrc='vi ~/.vimrc'
+alias update='brew update; flutter upgrade; rustup update; pion update'
+
+alias goget="get go"    # go
+alias ccget="get cc"    # c and c++
+alias pyget="get py"    # python
+alias rsget="get rs"    # rust
+alias jlget="get jl"    # julia
+alias jsget="get js"    # javascript
+alias jvget="get jv"    # java
+alias dtget="get dt"    # dart
+alias hsget="get hs"    # haskell
+alias scget="get sc"    # solidity, smart contract
+alias waget="get wa"    # wasm
+alias zgget="get zg"    # zig
+alias nmget="get nm"    # nim
+alias elget="get el"    # erlang, elixir
+# ----------------------------------------------------------------------
+export PATH=/bin:/sbin:/usr/sbin:/usr/bin:/usr/local/bin
+
+ if [ -d /usr/local/opt/llvm ]; then
+    export PATH=$PATH:/usr/local/opt/llvm/bin
+    export LDFLAGS=-L/usr/local/opt/llvm/lib
+    export CPPFLAGS=-I/usr/local/opt/llvm/include
+    echo "LLVM setting ..."
+fi
+
+if [ -d $HOME/coding/go/root/go ]; then
+    export GOROOT=$HOME/coding/go/root/go
+    export PATH=$PATH:$GOROOT/bin
+    export GOPATH=$HOME/coding/go
+    export PATH=$PATH:$GOPATH/bin
+    echo "Golang setting : `go version`"
+fi
+
+if [ -d $HOME/.cargo ]; then
+    source $HOME/.cargo/env
+    #export CARGO=$HOME/coding/rs/cargo
+    #export PATH=$PATH:$CARGO/bin
+    echo "Rust setting : `rustc --version`"
+fi
+
+if [ -d $HOME/coding/dt/flutter ]; then
+    export FLUTTER=$HOME/coding/dt/flutter
+    export PATH=$PATH:$FLUTTER/bin
+    echo "Flutter setting ..."
+fi
+# ----------------------------------------------------------------------
+function goto() {
+    if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [.|..|go|rs|sikang]"
+        return
+    fi
+    case $1 in 
+    .)
+        pushd . ;;
+    ..) 
+        popd ;;
+    go)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        root)
+            cd $HOME/coding/$1/root ;;
+        bin | pkg | src)
+            cd $HOME/coding/$1/$2 ;;
+        git*)
+            cd $HOME/coding/$1/src/github.com ;;
+        pion)
+            cd $HOME/coding/$1/src/github.com/pion ;;
+        sikang*)
+            cd $HOME/coding/$1/src/github.com/sikang99 ;;
+        *)
+            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|pion|sikang]"
+        esac
+        ;;
+    rs)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        bin | src)
+            cd $HOME/coding/$1/$2 ;;
+        cargo)
+            cd $HOME/.cargo ;;
+        *)
+            echo "$FUNCNAME $1 [.|cargo|bin|src]"
+        esac
+        ;;
+    dt)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        bin | src)
+            cd $HOME/coding/$1/$2 ;;
+        flutter)
+            cd $HOME/coding/$1/$2 ;;
+        *)
+            echo "$FUNCNAME $1 [.|flutter|bin|src]"
+        esac
+        ;;
+    esac
+}
+
+function gover() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.12), 1.12(.7)"
+        return
+    fi
+    pushd . > /dev/null
+    cd $HOME/coding/go/root
+    if [ ! -L "go" ]; then 
+        ln -s go1.10.7 go
+    fi
+
+    case $1 in
+    *1.9*)
+        #CGO_ENABLED=0
+        if [ -d "go1.9.7" ]; then
+            unlink go
+            ln -s go1.9.7 go
+        fi
+        ;;
+    *1.10*)
+        #GOcACHE={on|off}
+        if [ -d "go1.10.8" ]; then
+            unlink go
+            ln -s go1.10.8 go
+        fi
+        ;;
+    *1.11*)
+        #GO111MODULE={auto|on|off}
+        #GOPROXY=file://home/stoney/coding/go/proxy
+        if [ -d "go1.11.12" ]; then
+            unlink go
+            ln -s go1.11.12 go
+        fi
+        ;;
+    *1.12*)
+        if [ -d "go1.12.7" ]; then
+            unlink go
+            ln -s go1.12.7 go
+        fi
+        ;;
+    *1.13* | new)
+        ;;
+    . | current) 
+        #go version
+        ;;
+    list)
+        ls -al $(GOROOT)
+        ;;
+    *)
+        echo "$FUNCNAME> '$1' is not installed. select 1.9, 1.10 or 1.11"
+        ;;
+    esac
+
+    popd > /dev/null
+    go version
+    gocode
+}
+
+function gomod() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [auto|on|off|mod|sum|<command>...]"
+		return
+	fi
+    case $1 in
+    . | check)
+        echo "$FUNCNAME> `go version` [`env | grep GO111MODULE`]" ;;
+    on | off |auto) 
+        export GO111MODULE=$1
+        gomod check ;;
+    init | tidy | vendor | verify | graph | why | edit | download)
+        go mod $@ ;;
+    tag)
+        git describe --always ;;
+    mod)
+        vi go.mod ;;
+    sum)
+        vi go.sum ;;
+    list)
+        go list -u -m $2 all ;;
+    vbuild)
+        go build --mod=vendor ./... ;;
+    rebuild)
+        rm -rf go.mod go.sum vendor/
+        go mod init
+        go mod tidy
+        go mod vendor
+        go build ./...
+        ;;
+    clean)
+        rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
+    clobber)
+        go clean -modcache ;;
+    *)
+        go $@ ;;
+    esac
+}
+
+# manage pion based webrtc system
+function pion() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.1.2"
+		return
+	fi
+    PION="github.com/pion"
+    GOGET="go get -u"
+    case $1 in
+    update | new)
+        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
+        go get $PION/webrtc/v2
+        go get $PION/sdp/v2
+        go get $PION/ice
+        go get $PION/rtp $PION/rtcp $PION/srtp
+        go get $PION/sctp
+        go get $PION/dtls
+        go get $PION/quic
+        go get $PION/stun
+        go get $PION/turn $PION/turnc
+        go get $PION/mdns
+        go get $PION/datachannel
+        go get $PION/transport
+        go get $PION/rtpengine 
+        go get $PION/signaler
+        go get $PION/logging
+        ;;
+    doc)
+        go doc $GOPATH/src/$PION/$2
+        ;;
+    pkg | mod)
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
+        ls -lF $GOPATH/pkg/mod/$PION
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/sdp"
+        ls -lF $GOPATH/pkg/mod/$PION/sdp
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/webrtc"
+        ls -lF $GOPATH/pkg/mod/$PION/webrtc
+        ;;
+    src | dir)
+        ls -alF $GOPATH/src/$PION
+        ;;
+    home)
+        pushd .
+        cd $GOPATH/src/$PION
+        ;;
+    back)
+        popd
+        ;;
+    open)
+        openpage https://$PION/webrtc
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# set language environment
+function setlang() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME [kr|en] ($LANG)"
+        return
+    fi
+    case $1 in 
+    kr | ko*)
+        export LANG=ko_KR.UTF-8
+        ;;
+    en*)
+        export LANG=en_US.UTF-8
+        ;;
+    *)
+        echo "$FUNCNAME> '$1' is an unknown lang type."
+        ;;
+    esac
+    echo "$FUNCNAME> LANG=$LANG"
+}
+
+function openpage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <URL>"
+		return
+    fi
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        xdg-open $1
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        open $1
+    else
+        echo $1
+    fi
+}
+
+# search file and directory by the given string
+function gofind() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <search string> [path to start]"
+		return
+	fi
+
+    # search with string inclusion starting from the given folder
+	if [ $2 ]; then
+        find $2 -name "*$1*" -print
+    else
+        find . -name "*$1*" -print
+    fi
+}
+
+# fast file finder from HOME
+function gofile() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <filename> [path to start]"
+		return
+	fi
+
+    # case insensitive search
+	if [ $2 ]; then
+	    find $2 -iname $1 -type f -print
+    else
+	    find ~ -iname $1 -type f -print
+    fi
+}
+
+# fast package finder from GOPATH
+function gopath() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <package name>"
+		return
+	fi
+    list=$(eval find $GOPATH/src -iname $1 -type d -print)
+    if [ "$list" = "" ]; then
+        echo "$FUNCNAME> package '$1' not found in $GOPATH/src"
+        return
+    fi
+    for dir in $list; do
+        # exclude /vendor or /_ diectories
+        if [[ $dir = *"/vendor/"* ]] || [[ $dir = *"/_"* ]]; then
+            continue
+        else
+            cd $dir
+            return
+        fi
+    done
+    echo "$FUNCNAME> '$1' not found in $GOPATH/src"
+}
+
+# show web page for the current directory
+function gopage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <.|url|github path>"
+		return
+	fi
+    case $1 in
+    . | cwd)
+        local dir=`pwd`
+        local package=${dir#*/src/}
+        IFS='/' array=($package)
+        local page=${array[0]}/${array[1]}/${array[2]}
+        IFS=''
+        echo "https://$page"
+        openpage https://$page >/dev/null
+        ;;
+    http*)
+        echo $1
+        openpage $1 >/dev/null
+        ;;
+    *.com*)
+        openpage https://$1 >/dev/null
+        ;;
+    *)
+        echo "https://github.com/$1"
+        openpage https://github.com/$1 >/dev/null
+        ;;
+    esac
+}
+
+# Git cloning with various source types
+function gitclone() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
+		return
+	fi
+
+    local url=$1
+    local package=${url%.git} 
+
+    case $url in
+    http*://*)
+	    package=${url#http*://} 
+        ;;
+    github.com* | golang.org* | gopkg.in*)
+	    url=https://$1 
+        ;;
+    *)  # default on github.com
+        echo "$FUNCNAME> $url is not a url to git"
+        return
+        ;;
+    esac
+    result=$(git clone --recursive $url $package)
+    cd $package
+}
+
+# git clone by language type
+function get() {
+	if [ $# -lt 2 ]; then
+		echo "usage: $FUNCNAME [<language> <url of package>] are required."
+		return
+	fi
+    if [ -d $HOME/coding/$1/src ]; then
+        cd $HOME/coding/$1/src
+        gitclone $2
+    fi
+}
+
+# docker utility operation beside of basic commands
+function godkr() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <compose|machine|layer|open|clean|run> <params...>"
+		return
+	fi
+
+    case $1 in
+    compose)
+        docker-compose $2 $3 $4
+        ;;
+    machine)
+        docker-machine $2 $3 $4
+        ;;
+    layer)
+        echo "$FUNCNAME> display layer informaton of the image $2"
+        docker save -o image.tar $2
+        dlayer -f image.tar -n 1000 | less
+        rm -f image.tar
+        ;;
+    open)
+        if [ "$2" = "" ]; then
+            echo "$FUNCNAME> $1 <repo name>"
+        else
+            echo "$FUNCNAME> open the dockerhub page ..."
+            openpage https://hub.docker.com/r/$2
+        fi
+        ;;
+    clean) 
+        echo "$FUNCNAME> docker cleaning ..."
+        docker container prune -f
+        docker network prune -f
+        docker system prune -f
+        docker volume prune -f
+        docker images
+        ;;
+    lint)
+        godolint $2 $3
+        ;;
+    run)
+        case $2 in
+        rust)
+            # https://hub.docker.com/r/wasm/toolchain/
+            docker run -it --rm -v $PWD:/project wasm/toolchain:latest /bin/bash --login
+            ;;
+        *)
+            echo "$FUNCNAME> $1 <rust>"
+            ;;
+        esac
+        ;;
+    *)
+        docker $@
+        ;;
+    esac
+}
+
+function usage() {
+    setlang
+    openpage
+    gomod
+    goto
+    gover
+    gofind
+    gofile
+    gopath
+    gopage
+    pion
+}
+# ----------------------------------------------------------------------
