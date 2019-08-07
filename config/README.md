@@ -3,6 +3,6 @@
 
 
 1. `:GoInstallBinaries`
-2. `PlugInstall` and `PlugUpdate`
+2. `:PlugInstall` and `:PlugUpdate`
 
 
