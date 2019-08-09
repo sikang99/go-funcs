@@ -913,18 +913,18 @@ function gopage() {
         local page=${array[0]}/${array[1]}/${array[2]}
         IFS=''
         echo "https://$page"
-        xdg-open https://$page >/dev/null
+        openpage https://$page >/dev/null
         ;;
     http*)
         echo $1
-        xdg-open $1 >/dev/null
+        openpage $1 >/dev/null
         ;;
     *.com*)
-        xdg-open https://$1 >/dev/null
+        openpage https://$1 >/dev/null
         ;;
     *)
         echo "https://github.com/$1"
-        xdg-open https://github.com/$1 >/dev/null
+        openpage https://github.com/$1 >/dev/null
         ;;
     esac
 }
@@ -969,7 +969,7 @@ function gitupdate() {
         git pull origin master
         ;;
     *)
-        echo "$FUNCNAME> $1 is unkown option"
+        echo "$FUNCNAME> $1 is an unkown option"
         return
         ;;
     esac
