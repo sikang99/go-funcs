@@ -51,6 +51,8 @@ if [ -d $HOME/coding/go/root/go ]; then
     export PATH=$PATH:$GOROOT/bin
     export GOPATH=$HOME/coding/go
     export PATH=$PATH:$GOPATH/bin
+    alias gowasm='GOOS=js GOARCH=wasm go'
+    export TINYGOROOT=$HOME/coding/go/src/github.com/tinygo-org/tinygo
     echo "Golang setting : `go version`"
 fi
 
@@ -89,14 +91,16 @@ function goto() {
             cd $HOME/coding/$1/src/github.com ;;
         pion)
             cd $HOME/coding/$1/src/github.com/pion ;;
+        tiny*) # tinygo
+            cd $HOME/coding/$1/src/github.com/tinygo-org/tinygo ;;
         sikang*)
             cd $HOME/coding/$1/src/github.com/sikang99 ;;
-        team*)
+        team*) # teamgrit
             cd $HOME/coding/$1/src/github.com/teamgrit-lab ;;
         wasm)
             cd $HOME/coding/$1/src/github.com/sikang99/wasm-example ;;
         *)
-            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|pion|sikang]"
+            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|pion|tinygo|sikang|teamgrit]"
         esac
         ;;
     rs)

@@ -37,7 +37,7 @@ git g:
 
 git-update gu:
 	git add Makefile *.md go-funcs.sh config/
-	git commit -m "update contents"
+	git commit -m "update contents /config"
 	git push
 
 git-login gl:
