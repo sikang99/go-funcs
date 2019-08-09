@@ -1,11 +1,13 @@
 #
+alias lr='_(){ tree $1 | less; }; _'
 # ~/.bashrc for macos
 #
 export PS1="\[\e[36;1m\]\u@\[\e[32;1m\]\h:\[\e[31;1m\]\w> \[\e[0m\]"
 
-alias lr='tree | less'
-alias l2='tree -L 2'
-alias l3='tree -L 3'
+alias mkcd='_(){ mkdir $1; cd $1; }; _'
+alias lr='_(){ tree $1 | less; }; _'
+alias l2='_(){ tree -L 2 $1 | less; }; _'
+alias l3='_(){ tree -L 3 $1 | less; }; _'
 alias ll='ls -al'
 alias ls='ls -aF'
 alias dir='clear; ls -aCF'
@@ -89,6 +91,10 @@ function goto() {
             cd $HOME/coding/$1/src/github.com/pion ;;
         sikang*)
             cd $HOME/coding/$1/src/github.com/sikang99 ;;
+        team*)
+            cd $HOME/coding/$1/src/github.com/teamgrit-lab ;;
+        wasm)
+            cd $HOME/coding/$1/src/github.com/sikang99/wasm-example ;;
         *)
             echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|pion|sikang]"
         esac
@@ -227,22 +233,11 @@ function pion() {
     GOGET="go get -u"
     case $1 in
     update | new)
-        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
-        go get $PION/webrtc/v2
-        go get $PION/sdp/v2
-        go get $PION/ice
-        go get $PION/rtp $PION/rtcp $PION/srtp
-        go get $PION/sctp
-        go get $PION/dtls
-        go get $PION/quic
-        go get $PION/stun
-        go get $PION/turn $PION/turnc
-        go get $PION/mdns
-        go get $PION/datachannel
-        go get $PION/transport
-        go get $PION/rtpengine 
-        go get $PION/signaler
-        go get $PION/logging
+        #export GO111MODULE=on
+        for value in webrtc/v2 sdp/v2 ice rtp rtcp srtp sctp dtls quic datachannel stun turn turnc mdns transport rtpengine signaler logging  
+        do
+            GO111MODULE=on go get $PION/$value
+        done
         ;;
     doc)
         go doc $GOPATH/src/$PION/$2
@@ -364,7 +359,7 @@ function gopath() {
 # show web page for the current directory
 function gopage() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <.|url|github path>"
+		echo "usage: $FUNCNAME <.|url|github path|teamgrit|sikang>"
 		return
 	fi
     case $1 in
@@ -379,11 +374,13 @@ function gopage() {
         ;;
     http*)
         echo $1
-        openpage $1 >/dev/null
-        ;;
+        openpage $1 >/dev/null ;;
     *.com*)
-        openpage https://$1 >/dev/null
-        ;;
+        openpage https://$1 >/dev/null ;;
+    teamgrit**)
+        openpage https://github.com/teamgrit-lab ;; 
+    sikang*)
+        openpage https://github.com/sikang99 ;;
     *)
         echo "https://github.com/$1"
         openpage https://github.com/$1 >/dev/null
@@ -495,6 +492,7 @@ function usage() {
     gofile
     gopath
     gopage
+    godkr
     pion
 }
 # ----------------------------------------------------------------------
