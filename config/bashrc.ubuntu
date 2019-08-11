@@ -127,8 +127,8 @@ export MANPATH=/usr/share/man:/usr/local/man
 alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
 alias update='sudo apt update && sudo apt -y upgrade && sudo apt autoremove -y && sudo apt autoclean -y'
 alias upgrade='flutter upgrade'
-alias bashrc='vi ~/.bashrc && source ~/.bashrc'
 alias vimrc='vi ~/.vimrc'
+alias bashrc='vi ~/.bashrc && source ~/.bashrc'
 alias profile='vi ~/.profile'
 alias rpi='ssh pi@192.168.0.17'
 alias makef='make -f'
@@ -137,13 +137,13 @@ alias video='v4l2-ctl --list-devices --list-ctrls --list-formats'
 alias chrome='chromium-browser'
 alias hchrome='chrome --headless'
 
+alias lr='_(){ tree $1 | less; }; _'
+alias l2='_(){ tree -L 2 $1 | less; }; _'
+alias l3='_(){ tree -L 3 $1 | less; }; _'
+alias ll='ls -al'
+alias ls='ls -aF'
 alias cls='clear'
-alias d='clear && ls -CF'
-alias lr='tree -a'
-alias lr2='tree -aL 2'
-alias lr3='tree -aL 3'
-alias lrm='tree -a | less'
-alias dirs='dirs -v'
+alias dir='clear && ls -CF'
 alias nls='sudo netstat -ntlp | grep LISTEN'
 
 alias ev='vi Vagrantfile'
@@ -1343,23 +1343,10 @@ function pion() {
     GOGET="go get -u"
     case $1 in
     update | new)
-        echo "update $PION/{webrtc,sdp,ice,rtp,rtcp,srtp,sctp,dtls,quic,datachannel,stun,turn,turnc,mdns,transport,rtpengine,signaler,logging}"
-        export GO111MODULE=on
-        go get $PION/webrtc/v2
-        go get $PION/sdp/v2
-        go get $PION/ice
-        go get $PION/rtp $PION/rtcp $PION/srtp
-        go get $PION/sctp
-        go get $PION/dtls
-        go get $PION/quic
-        go get $PION/stun
-        go get $PION/turn $PION/turnc
-        go get $PION/mdns
-        go get $PION/datachannel
-        go get $PION/transport
-        go get $PION/rtpengine 
-        go get $PION/signaler
-        go get $PION/logging
+        for value in webrtc/v2 sdp/v2 ice rtp rtcp srtp sctp dtls quic datachannel stun turn turnc mdns transport rtpengine signaler logging
+        do
+            GO111MODULE=on go get $PION/$value
+        done
         ;;
     doc)
         go doc $GOPATH/src/$PION/$2
