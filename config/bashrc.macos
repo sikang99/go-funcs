@@ -9,6 +9,7 @@ alias lr='_(){ tree $1 | less; }; _'
 alias l2='_(){ tree -L 2 $1 | less; }; _'
 alias l3='_(){ tree -L 3 $1 | less; }; _'
 alias ll='ls -al'
+alias lk='ls -lh'   # display size in k
 alias ls='ls -aF'
 alias dir='clear; ls -aCF'
 alias cls='clear'
@@ -17,8 +18,11 @@ alias ls='LSCOLORS=gxfxcxdxbxexexabagacad /bin/ls -bFHGLOPW'
 alias ed='vi Dockerfile'
 alias em='vi Makefile'
 alias er='vi README.md'
+alias ei='vi .gitignore'
+alias ey='vi *.yaml'
 
 alias bashrc='vi ~/.bashrc; source ~/.bashrc'
+alias bashrx='source ~/.bashrc'
 alias vimrc='vi ~/.vimrc'
 alias update='brew update; flutter upgrade; rustup update; pion update'
 
@@ -68,6 +72,20 @@ if [ -d $HOME/coding/dt/flutter ]; then
     export PATH=$PATH:$FLUTTER/bin
     echo "Flutter setting ..."
 fi
+
+if [ -d $HOME/.wasmer ]; then
+    export WASMER_DIR=$HOME/.wasmer
+    source $WASMER_DIR/wasmer.sh
+    echo "Wasmer setting ..."
+fi
+
+if [ -d $HOME/.gomeboycolor ]; then
+    export GOMEBOY_DIR=$HOME/.gomeboycolor
+    #source $GOMEBOY_DIR/gomeboycolor
+    export DYLD_LIBRARY_PATH=$GOMEBOY_DIR/lib
+    export PATH=$PATH:$GOMEBOY_DIR/bin
+    echo "Gomeboy setting ..."
+fi
 # ----------------------------------------------------------------------
 function goto() {
     if [ $# = 0 ]; then
@@ -89,8 +107,8 @@ function goto() {
             cd $HOME/coding/$1/$2 ;;
         git*)
             cd $HOME/coding/$1/src/github.com ;;
-        pion)
-            cd $HOME/coding/$1/src/github.com/pion ;;
+        pion | google)
+            cd $HOME/coding/$1/src/github.com/$2 ;;
         tiny*) # tinygo
             cd $HOME/coding/$1/src/github.com/tinygo-org/tinygo ;;
         sikang*)
@@ -100,7 +118,7 @@ function goto() {
         wasm)
             cd $HOME/coding/$1/src/github.com/sikang99/wasm-example ;;
         *)
-            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|pion|tinygo|sikang|teamgrit]"
+            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|google|pion|tinygo|sikang|teamgrit]"
         esac
         ;;
     rs)
@@ -127,50 +145,49 @@ function goto() {
             echo "$FUNCNAME $1 [.|flutter|bin|src]"
         esac
         ;;
+    wa)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        bin | src)
+            cd $HOME/coding/$1/$2 ;;
+        esac
+        ;;
+    pion | google)
+        cd $HOME/coding/go/src/github.com/$1 ;;
     esac
 }
 
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME <go version>: 1.9(.7), 1.10(.8), 1.11(.12), 1.12(.7)"
+        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.9), 1.13(beta)]"
         return
     fi
     pushd . > /dev/null
     cd $HOME/coding/go/root
     if [ ! -L "go" ]; then 
-        ln -s go1.10.7 go
+        ln -s go1.12.7 go
     fi
 
     case $1 in
-    *1.9*)
-        #CGO_ENABLED=0
-        if [ -d "go1.9.7" ]; then
-            unlink go
-            ln -s go1.9.7 go
-        fi
-        ;;
-    *1.10*)
-        #GOcACHE={on|off}
-        if [ -d "go1.10.8" ]; then
-            unlink go
-            ln -s go1.10.8 go
-        fi
-        ;;
     *1.11*)
         #GO111MODULE={auto|on|off}
-        #GOPROXY=file://home/stoney/coding/go/proxy
-        if [ -d "go1.11.12" ]; then
+        if [ -d "go1.11.13" ]; then
             unlink go
-            ln -s go1.11.12 go
+            ln -s go1.11.13 go
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.7" ]; then
+        if [ -d "go1.12.9" ]; then
             unlink go
-            ln -s go1.12.7 go
+            ln -s go1.12.9 go
         fi
         ;;
-    *1.13* | new)
+    *1.13* | beta)
+        if [ -d "go1.13beta" ]; then
+            unlink go
+            ln -s go1.13beta go
+        fi
         ;;
     . | current) 
         #go version
@@ -179,7 +196,7 @@ function gover() {
         ls -al $(GOROOT)
         ;;
     *)
-        echo "$FUNCNAME> '$1' is not installed. select 1.9, 1.10 or 1.11"
+        $FUNCNAME; return
         ;;
     esac
 
@@ -198,9 +215,10 @@ function gomod() {
         echo "$FUNCNAME> `go version` [`env | grep GO111MODULE`]" ;;
     on | off |auto) 
         export GO111MODULE=$1
-        gomod check ;;
+        $FUNCNAME .
+        ;;
     init | tidy | vendor | verify | graph | why | edit | download)
-        go mod $@ ;;
+        go mod $1 ;;
     tag)
         git describe --always ;;
     mod)
@@ -227,6 +245,47 @@ function gomod() {
     esac
 }
 
+function goproxy() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [.(check)|direct|off|set|unset|up|down|test]"
+		return
+	fi
+    case $1 in
+    . | check)
+        echo "$FUNCNAME> `go version` [`go env | grep GOPROXY`], [`go env | grep GOPRIVATE`]"
+        return ;;
+    .. | unset)
+        export GOPROXY=""
+        export GOPRIVATE=""
+        $FUNCNAME check
+        ;;
+    direct | off) 
+        export GOPROXY=$1
+        $FUNCNAME check
+        ;;
+    set)
+        export GO111MODULE=on
+        export GOPROXY=https://goproxy.io
+        $FUNCNAME check
+        ;;
+    up)
+        export ATHENS_STORAGE=~/athens-storage
+        mkdir -p $ATHENS_STORAGE
+        docker run -d -v $ATHENS_STORAGE:/var/lib/athens --name athens-proxy -p '3000:3000' gomods/athens:latest
+        export GOPROXY=http://localhost:3000
+        docker ps
+        ;;
+    down) # docker rm -f athen-proxy
+        docker stop athens-proxy && docker rm $_
+        docker ps
+        ;;
+    test)
+        open http://localhost:3000
+        ;;
+    esac
+}
+
+
 # manage pion based webrtc system
 function pion() {
 	if [ $# = 0 ]; then
@@ -248,11 +307,11 @@ function pion() {
         ;;
     pkg | mod)
         echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
-        ls -lF $GOPATH/pkg/mod/$PION
+        ls -cF $GOPATH/pkg/mod/$PION
         echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/sdp"
-        ls -lF $GOPATH/pkg/mod/$PION/sdp
+        ls -cF $GOPATH/pkg/mod/$PION/sdp
         echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/webrtc"
-        ls -lF $GOPATH/pkg/mod/$PION/webrtc
+        ls -cF $GOPATH/pkg/mod/$PION/webrtc
         ;;
     src | dir)
         ls -alF $GOPATH/src/$PION
@@ -275,7 +334,7 @@ function pion() {
 
 # set language environment
 function setlang() {
-	if [ $# -eq 0 ]; then
+	if [ $# = 0 ]; then
         echo "usage: $FUNCNAME [kr|en] ($LANG)"
         return
     fi
@@ -385,6 +444,8 @@ function gopage() {
         openpage https://github.com/teamgrit-lab ;; 
     sikang*)
         openpage https://github.com/sikang99 ;;
+    stoney*)
+        openpage https://sikang99.github.io/ ;;
     *)
         echo "https://github.com/$1"
         openpage https://github.com/$1 >/dev/null
@@ -406,7 +467,7 @@ function gitclone() {
     http*://*)
 	    package=${url#http*://} 
         ;;
-    github.com* | golang.org* | gopkg.in*)
+    github.com* | *golang.org* | gopkg.in*)
 	    url=https://$1 
         ;;
     *)  # default on github.com
@@ -431,12 +492,11 @@ function get() {
 }
 
 # docker utility operation beside of basic commands
-function godkr() {
+function dkr() {
 	if [ $# = 0 ]; then
 		echo "usage: $FUNCNAME <compose|machine|layer|open|clean|run> <params...>"
 		return
 	fi
-
     case $1 in
     compose)
         docker-compose $2 $3 $4
@@ -486,17 +546,57 @@ function godkr() {
     esac
 }
 
+function grpc() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [debug|log|install|version]"
+		return
+	fi
+    case $1 in
+    open)
+        openpage https://www.grpc.io/
+        openpage https://github.com/grpc/grpc-go
+        openpage https://github.com/golang/protobuf
+        ;;
+    debug)
+        GIT_TAG="v1.2.0" # change as needed
+        go get -d -u github.com/golang/protobuf/protoc-gen-go
+        git -C "$(go env GOPATH)"/src/github.com/golang/protobuf checkout $GIT_TAG
+        go install github.com/golang/protobuf/protoc-gen-go
+        ;;
+    level | log)
+        export GRPC_GO_LOG_VERBOSITY_LEVEL=99 
+        export GRPC_GO_LOG_SEVERITY_LEVEL=info
+        echo "GRPC_GO_LOG_VERBOSITY_LEVEL=$GRPC_GO_LOG_VERBOSITY_LEVEL GRPC_GO_LOG_SEVERITY_LEVEL=$GRPC_GO_LOG_SEVERITY_LEVEL"
+        ;;
+    install)
+        brew tap grpc/grpc
+        brew install grpc
+        ;;
+    version)
+        brew info grpc
+        protoc --version
+        which protoc protoc-gen-go
+        ;;
+    esac
+}
+
 function usage() {
     setlang
     openpage
     gomod
+    goproxy
     goto
     gover
     gofind
     gofile
     gopath
     gopage
-    godkr
+    dkr
     pion
+    grpc
 }
 # ----------------------------------------------------------------------
+
+# Wasmer
+export WASMER_DIR="/Users/stoney/.wasmer"
+[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"  # This loads wasmer
