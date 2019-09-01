@@ -6,7 +6,7 @@ copy c:
 	@echo "> make (copy) [mac|linux]"
 
 copy-mac cm:
-	cp ~/.bashrc bashrc.macos
+	cp ~/.bash_profile bash_profile.macos
 
 copy-linux cl:
 	cp ~/.bashrc bashrc.linux

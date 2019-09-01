@@ -19,12 +19,13 @@ alias ed='vi Dockerfile'
 alias em='vi Makefile'
 alias er='vi README.md'
 alias ei='vi .gitignore'
-alias ey='vi *.yaml'
+alias ey='vi *.yml'
 
-alias bashrc='vi ~/.bashrc; source ~/.bashrc'
-alias bashrx='source ~/.bashrc'
+alias bashrc='vi ~/.bash_profile; source ~/.bash_profile'
+alias bashrcx='source ~/.bash_profile'
 alias vimrc='vi ~/.vimrc'
 alias update='brew update; flutter upgrade; rustup update; pion update'
+alias image='qlmanage -p $@'
 
 alias goget="get go"    # go
 alias ccget="get cc"    # c and c++
@@ -160,7 +161,7 @@ function goto() {
 
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.9), 1.13(beta)]"
+        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.9), 1.13(rc1)]"
         return
     fi
     pushd . > /dev/null
@@ -183,10 +184,10 @@ function gover() {
             ln -s go1.12.9 go
         fi
         ;;
-    *1.13* | beta)
-        if [ -d "go1.13beta" ]; then
+    *1.13* | rc1)
+        if [ -d "go1.13rc1" ]; then
             unlink go
-            ln -s go1.13beta go
+            ln -s go1.13rc1 go
         fi
         ;;
     . | current) 
@@ -201,7 +202,7 @@ function gover() {
     esac
 
     popd > /dev/null
-    go version
+    echo "$FUNCNAME> `go version`"
     gocode
 }
 
@@ -467,7 +468,7 @@ function gitclone() {
     http*://*)
 	    package=${url#http*://} 
         ;;
-    github.com* | *golang.org* | gopkg.in*)
+    github.com* | *golang.org* | tinygo.org* | gopkg.in*)
 	    url=https://$1 
         ;;
     *)  # default on github.com
