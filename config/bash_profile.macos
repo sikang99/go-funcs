@@ -27,6 +27,7 @@ alias vimrc='vi ~/.vimrc'
 alias update='brew update; flutter upgrade; rustup update; pion update'
 alias image='qlmanage -p $@'
 
+alias aiget="get ai"    # AI, ML, DL
 alias goget="get go"    # go
 alias ccget="get cc"    # c and c++
 alias pyget="get py"    # python
@@ -45,13 +46,16 @@ alias elget="get el"    # erlang, elixir
 export PATH=/bin:/sbin:/usr/sbin:/usr/bin:/usr/local/bin
 
  if [ -d /usr/local/opt/llvm ]; then
+    export LLVM_DIR=/usr/local/opt/llvm
+    export LDFLAGS=-L$LLVM_DIR/lib
+    export CPPFLAGS=-I$LLVM_DIR/include
     export PATH=$PATH:/usr/local/opt/llvm/bin
     export LDFLAGS=-L/usr/local/opt/llvm/lib
     export CPPFLAGS=-I/usr/local/opt/llvm/include
     echo "LLVM setting ..."
 fi
 
-if [ -d $HOME/coding/go/root/go ]; then
+if [ -d $HOME/coding/go/root ]; then
     export GOROOT=$HOME/coding/go/root/go
     export PATH=$PATH:$GOROOT/bin
     export GOPATH=$HOME/coding/go
@@ -80,17 +84,23 @@ if [ -d $HOME/.wasmer ]; then
     echo "Wasmer setting ..."
 fi
 
-if [ -d $HOME/.gomeboycolor ]; then
+if [ -f $HOME/.gomeboycolor ]; then
     export GOMEBOY_DIR=$HOME/.gomeboycolor
     #source $GOMEBOY_DIR/gomeboycolor
     export DYLD_LIBRARY_PATH=$GOMEBOY_DIR/lib
     export PATH=$PATH:$GOMEBOY_DIR/bin
     echo "Gomeboy setting ..."
 fi
+# https://www.bento4.com/
+if [ -d $HOME/coding/cc/tool/bento4 ]; then
+    export BENTO4_HOME=$HOME/coding/cc/tool/bento4
+    export PATH=$PATH:$BENTO4_HOME/bin
+    echo "Bento4 setting ..."
+fi
 # ----------------------------------------------------------------------
 function goto() {
     if [ $# = 0 ]; then
-        echo "usage: $FUNCNAME [.|..|go|rs|sikang]"
+        echo "usage: $FUNCNAME [.|..|ai|go|rs|wa| ... ]"
         return
     fi
     case $1 in 
@@ -108,8 +118,14 @@ function goto() {
             cd $HOME/coding/$1/$2 ;;
         git*)
             cd $HOME/coding/$1/src/github.com ;;
+        quic)
+            cd $HOME/coding/go/src/github.com/lucas-clemente/quic-go ;;
+        ayame)
+            cd $HOME/coding/$1/src/github.com/OpenAyame ;;
         pion | google)
             cd $HOME/coding/$1/src/github.com/$2 ;;
+        scs | session)
+            cd $HOME/coding/$1/src/github.com/alexedwards/scs ;;
         tiny*) # tinygo
             cd $HOME/coding/$1/src/github.com/tinygo-org/tinygo ;;
         sikang*)
@@ -119,7 +135,7 @@ function goto() {
         wasm)
             cd $HOME/coding/$1/src/github.com/sikang99/wasm-example ;;
         *)
-            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|google|pion|tinygo|sikang|teamgrit]"
+            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|google|quic|pion|tinygo|sikang|teamgrit]"
         esac
         ;;
     rs)
@@ -155,19 +171,25 @@ function goto() {
         esac
         ;;
     pion | google)
-        cd $HOME/coding/go/src/github.com/$1 ;;
+        cd $HOME/coding/go/src/github.com/$1
+        ;;
+    ai)
+        if [ -d $HOME/coding/$1 ]; then
+            cd $HOME/coding/$1/src
+        fi
+        ;;
     esac
 }
 
 function gover() {
 	if [ $# -eq 0 ]; then
-        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.9), 1.13(rc1)]"
+        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.10), 1.13(1), beta, rc]"
         return
     fi
     pushd . > /dev/null
     cd $HOME/coding/go/root
     if [ ! -L "go" ]; then 
-        ln -s go1.12.7 go
+        ln -s go1.12.10 go
     fi
 
     case $1 in
@@ -179,22 +201,31 @@ function gover() {
         fi
         ;;
     *1.12*)
-        if [ -d "go1.12.9" ]; then
+        if [ -d "go1.12.10" ]; then
             unlink go
-            ln -s go1.12.9 go
+            ln -s go1.12.10 go
         fi
         ;;
-    *1.13* | rc1)
-        if [ -d "go1.13rc1" ]; then
+    *1.13*)
+        if [ -d "go1.13.1" ]; then
             unlink go
-            ln -s go1.13rc1 go
+            ln -s go1.13.1 go
+        fi
+        ;;
+    beta* | rc*)
+        if [ -d "go1.13$1" ]; then
+            unlink go
+            ln -s go1.13$1 go
+        else
+            echo "$FUNCNAME> $1 is not installed. Check the list."
+            ls -al $GOPATH/root
         fi
         ;;
     . | current) 
         #go version
         ;;
     list)
-        ls -al $(GOROOT)
+        ls -al $GOPATH/root
         ;;
     *)
         $FUNCNAME; return
@@ -290,7 +321,7 @@ function goproxy() {
 # manage pion based webrtc system
 function pion() {
 	if [ $# = 0 ]; then
-		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.1.2"
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.1.4"
 		return
 	fi
     PION="github.com/pion"
@@ -298,7 +329,7 @@ function pion() {
     case $1 in
     update | new)
         #export GO111MODULE=on
-        for value in webrtc/v2 sdp/v2 ice rtp rtcp srtp sctp dtls quic datachannel stun turn turnc mdns transport rtpengine signaler logging  
+        for value in webrtc/v2 sdp/v2 ice rtp rtcp srtp sctp dtls quic datachannel stun turn turnc mdns transport rtpengine signaler logging ion 
         do
             GO111MODULE=on go get $PION/$value
         done
@@ -581,6 +612,45 @@ function grpc() {
     esac
 }
 
+# start a simple http server and page open for the current directory
+function hopen() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [<dir>|check|kill|run(port,dir)], ex) hopen ."
+		return
+	fi
+    #script_port="9090"
+    #script_dir="."
+    #script_name="simplehttpserver -port=$script_port -dir=$script_dir"
+    script_pid="/tmp/simplehttpserver.pid"
+    case $1 in
+    check | c)
+        if [ -f $script_pid ]; then
+            ps $(cat $script_pid)
+        fi
+        ;;
+    kill | k)
+        if [ -f "$script_pid" ]; then
+            kill -9 $(cat $script_pid)
+            rm -f $script_pid
+        fi
+        ;;
+    run | r)
+        if [ $# -ge 3 -a -d "$3" ]; then
+            script_name="simplehttpserver -port=$2 -dir=$3"
+            printf "$script_name\n"
+            $script_name > /dev/null &
+            ps -ef | grep "$script_name" | grep -v grep | tr -s ' ' | cut -d ' ' -f3 > $script_pid
+            cat $script_pid
+            open "http://localhost:$2" > /dev/null
+        fi
+        ;;
+    *)  # default run
+        hopen kill
+        hopen run "9090" "$1" > /dev/null
+        ;;
+    esac
+}
+
 function usage() {
     setlang
     openpage
@@ -595,6 +665,7 @@ function usage() {
     dkr
     pion
     grpc
+    hopen
 }
 # ----------------------------------------------------------------------
 
