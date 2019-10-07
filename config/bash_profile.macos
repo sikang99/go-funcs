@@ -618,11 +618,11 @@ function hopen() {
         echo "usage: $FUNCNAME [<dir>|check|kill|run(port,dir)], ex) hopen ."
 		return
 	fi
-    #script_port="9090"
-    #script_dir="."
-    #script_name="simplehttpserver -port=$script_port -dir=$script_dir"
     script_pid="/tmp/simplehttpserver.pid"
     case $1 in
+    clean)
+        rm -f $script_pid
+        ;;
     check | c)
         if [ -f $script_pid ]; then
             ps $(cat $script_pid)
@@ -634,14 +634,19 @@ function hopen() {
             rm -f $script_pid
         fi
         ;;
+    test | t)
+            script_name="$GOPATH/bin/simplehttpserver -port=9090 -dir=."
+            printf "$script_name\n"
+            eval $script_name &
+        ;;
     run | r)
         if [ $# -ge 3 -a -d "$3" ]; then
             script_name="simplehttpserver -port=$2 -dir=$3"
             printf "$script_name\n"
-            $script_name > /dev/null &
+            eval $script_name &
             ps -ef | grep "$script_name" | grep -v grep | tr -s ' ' | cut -d ' ' -f3 > $script_pid
             cat $script_pid
-            open "http://localhost:$2" > /dev/null
+            open "http://localhost:$2" 
         fi
         ;;
     *)  # default run
