@@ -1,0 +1,1036 @@
+# 
+# .bashrc(.bash_profile) for stoney
+#
+alias lr='_(){ tree $1 | less; }; _'
+# ~/.bashrc for macos
+#
+export PS1="\[\e[36;1m\]\u@\[\e[32;1m\]\h:\[\e[31;1m\]\w> \[\e[0m\]"
+
+alias mkcd='_(){ mkdir $1; cd $1; }; _'
+alias lr='_(){ tree $1 | less; }; _'
+alias l2='_(){ tree -L 2 $1 | less; }; _'
+alias l3='_(){ tree -L 3 $1 | less; }; _'
+alias ll='ls -al'
+alias lk='ls -lh'   # display size in k
+alias ls='ls -aF'
+alias dir='clear; ls -aCF'
+alias cls='clear'
+alias ls='LSCOLORS=gxfxcxdxbxexexabagacad /bin/ls -bFHGLOPW'
+
+alias ec='vi Caddyfile'
+alias ed='vi Dockerfile'
+alias em='vi Makefile'
+alias er='vi README.md'
+alias ee='vi entrypoint.sh'
+alias ei='vi .gitignore'
+alias ey='vi docker-compose.yml'
+alias index='vi index.html'
+
+alias bashrc='vi ~/.bash_profile; source ~/.bash_profile'
+alias bashrcx='source ~/.bash_profile'
+alias vimrc='vi ~/.vimrc'
+alias update='brew update; flutter upgrade; rustup update; pion update'
+alias image='qlmanage -p $@'
+
+alias aiget="get ai"    # AI, ML, DL
+alias goget="get go"    # go
+alias ccget="get cc"    # c and c++
+alias pyget="get py"    # python
+alias rsget="get rs"    # rust
+alias jlget="get jl"    # julia
+alias jsget="get js"    # javascript
+alias jvget="get jv"    # java
+alias dtget="get dt"    # dart
+alias hsget="get hs"    # haskell
+alias scget="get sc"    # solidity, smart contract
+alias waget="get wa"    # wasm
+alias zgget="get zg"    # zig
+alias nmget="get nm"    # nim
+alias elget="get el"    # erlang, elixir
+alias vlget="get vl"    # vlang
+
+alias awsenv="cat ~/.aws/config; cat ~/.aws/credentials; source ~/.aws/envs; env | grep AWS"
+alias awslab="cd ~/coding/go/src/github.com/awslabs"
+
+alias sshcojam="ssh -p 10022 sikang@cojam.iptime.org"
+alias sftpcojam="sftp -P 10022 sikang@cojam.iptime.org"
+
+alias azssh="ssh -p 22 teamgrit@52.231.203.252"
+alias azsftpcojam="sftp -P 22 teamgrit@52.231.203.252"
+
+alias golang="cd ~/coding/go/src/github.com/sikang99/golang-example"
+# ----------------------------------------------------------------------
+# C compile including <stdio.h>
+export CPATH=/Library/Developer/CommandLineTools/usr/include/c++/v1
+export PATH=/bin:/sbin:/usr/sbin:/usr/bin:/usr/local/bin
+
+export C_INCLUDE_PATH=/usr/local/include
+#export CPLUS_INCLUDE_PATH=/usr/local/include
+#export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib
+#export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/lib
+
+export LIBRARY_PATH=/usr/lib:/usr/local/lib
+
+ if [ -d /usr/local/opt/llvm ]; then
+    export LLVM_DIR=/usr/local/opt/llvm
+    export LDFLAGS=-L$LLVM_DIR/lib
+    export CPPFLAGS=-I$LLVM_DIR/include
+    export PATH=/usr/local/opt/llvm/bin:$PATH
+    export LDFLAGS=-L/usr/local/opt/llvm/lib
+    export CPPFLAGS=-I/usr/local/opt/llvm/include
+    echo "LLVM 9 setting ..."
+fi
+
+if [ -d $HOME/coding/go/root ]; then
+    export GOROOT=$HOME/coding/go/root/go
+    export PATH=$PATH:$GOROOT/bin
+    export GOPATH=$HOME/coding/go
+    export GOBIN=$GOPATH/bin
+    export PATH=$PATH:$GOPATH/bin
+    alias gowasm='GOOS=js GOARCH=wasm go'
+    alias goarm='GOOS=linux GOARCH=arm go'
+    #export TGOROOT=$HOME/coding/go/root/tinygo
+    #export PATH=$PATH:$TGOROOT/bin
+    echo "Golang setting : `go version`"
+    echo "> `tinygo version`"
+fi
+if [ -d $HOME/coding/vl/root ]; then
+    export VLROOT=$HOME/coding/vl/root
+    export PATH=$PATH:$VLROOT
+    echo "V setting : `v version`"
+fi
+
+if [ -d $HOME/.cargo ]; then
+    source $HOME/.cargo/env
+    #export CARGO=$HOME/coding/rs/cargo
+    #export PATH=$PATH:$CARGO/bin
+    echo "Rust setting : `rustc --version`"
+fi
+
+if [ -d $HOME/coding/dt/flutter ]; then
+    export FLUTTER=$HOME/coding/dt/flutter
+    export PATH=$PATH:$FLUTTER/bin
+    echo "Flutter setting ..."
+fi
+
+# Wasmer
+#[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"  # This loads wasmer
+
+if [ -d $HOME/.wasmer ]; then
+    export WASMER_DIR=$HOME/.wasmer
+    source $WASMER_DIR/wasmer.sh
+    echo "Wasmer setting ..."
+fi
+
+
+if [ -f $HOME/.gomeboycolor ]; then
+    export GOMEBOY_DIR=$HOME/.gomeboycolor
+    #source $GOMEBOY_DIR/gomeboycolor
+    export DYLD_LIBRARY_PATH=$GOMEBOY_DIR/lib
+    export PATH=$PATH:$GOMEBOY_DIR/bin
+    echo "Gomeboy setting ..."
+fi
+
+# https://www.bento4.com/
+if [ -d $HOME/coding/cc/tool/bento4 ]; then
+    export BENTO4_HOME=$HOME/coding/cc/tool/bento4
+    export PATH=$PATH:$BENTO4_HOME/bin
+    echo "Bento4 setting ..."
+fi
+
+if [ -d /usr/local/janus ]; then
+    export JANUS_HOME=/usr/local/janus
+    export PATH=$PATH:$JANUS_HOME/bin
+    echo "Janus Gateway setting ..."
+fi
+# ----------------------------------------------------------------------
+function goto() {
+    if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [.|..|ai|go|rs|wa| ... ]"
+        return
+    fi
+    case $1 in 
+    .)
+        pushd . ;;
+    ..) 
+        popd ;;
+    go)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        root)
+            cd $HOME/coding/$1/root ;;
+        bin | pkg | src)
+            cd $HOME/coding/$1/$2 ;;
+        git*)
+            cd $HOME/coding/$1/src/github.com ;;
+        quic)
+            cd $HOME/coding/go/src/github.com/lucas-clemente/quic-go ;;
+        ayame)
+            #cd $HOME/coding/$1/src/github.com/OpenAyame ;;
+            cd $HOME/coding/$1/src/github.com/sikang99/ayame-update ;;
+        pion | google)
+            cd $HOME/coding/$1/src/github.com/$2 ;;
+        scs | session)
+            cd $HOME/coding/$1/src/github.com/alexedwards/scs ;;
+        tiny*) # tinygo
+            cd $HOME/coding/$1/src/github.com/tinygo-org/tinygo ;;
+        sikang*)
+            cd $HOME/coding/$1/src/github.com/sikang99
+            case $3 in
+            team*)
+                cd teamgrit-dev ;;
+            golang*)
+                cd golang-example ;;
+            chat*)
+                cd chat-example ;;
+            media*)
+                cd media-info ;;
+            aws)
+                cd aws-info ;;
+            janus)
+                cd janus-info ;;
+            docker)
+                cd cojam-docker ;;
+            wasm)
+                cd wasm-example ;;
+            webrtc)
+                cd webrtc-info ;;
+            cctv)
+                cd cctv-info ;;
+            android)
+                cd android-info ;;
+            esac
+            ;;
+        aws)
+            cd $HOME/coding/$1/src/github.com/
+            case $3 in
+            doc*)
+                cd awsdocs ;;
+            lab*)
+                cd awslabs ;;
+            *)
+                cd aws ;;
+            esac
+            ;;
+        team*) # teamgrit
+            cd $HOME/coding/$1/src/github.com/teamgrit-lab ;;
+        admin) # was admin
+            cd $HOME/coding/$1/src/github.com/teamgrit-lab/admin ;;
+        cobot) # was admin
+            cd $HOME/coding/$1/src/github.com/teamgrit-lab/cobot ;;
+        *)
+            echo "$FUNCNAME $1 [.|root|bin|pkg|src|git|google|quic|pion|tinygo|sikang|teamgrit]"
+        esac
+        ;;
+    rs)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        bin | src)
+            cd $HOME/coding/$1/$2 ;;
+        cargo)
+            cd $HOME/.cargo ;;
+        *)
+            echo "$FUNCNAME $1 [.|cargo|bin|src]"
+        esac
+        ;;
+    dt)
+        case $2 in
+        .)
+            cd $HOME/coding/$1 ;;
+        bin | src)
+            cd $HOME/coding/$1/$2 ;;
+        flutter)
+            cd $HOME/coding/$1/$2 ;;
+        *)
+            echo "$FUNCNAME $1 [.|flutter|bin|src]"
+        esac
+        ;;
+    wa | vl | cc)
+        case $2 in
+        root| bin | src )
+            cd $HOME/coding/$1/$2 ;;
+        *)
+            cd $HOME/coding/$1 ;;
+        esac
+        ;;
+    ai)
+        if [ -d $HOME/coding/$1 ]; then
+            cd $HOME/coding/$1/src
+        fi
+        ;;
+    pion)
+        cd $HOME/coding/go/src/github.com/$1 ;;
+    spider)
+        cd $HOME/coding/go/src/github.com/sikang99/spider ;;
+    spider2)
+        cd $HOME/coding/go/src/github.com/sikang99/spider2 ;;
+    mantis)
+        cd $HOME/coding/go/src/github.com/sikang99/mantis ;;
+    coturn)
+        cd $HOME/coding/cc/src/github.com/coturn/coturn ;;
+    momo)
+        cd $HOME/coding/cc/src/github.com/shiguredo/momo ;;
+    docker) # was admin
+        cd $HOME/coding/go/src/github.com/sikang99/cojam-docker ;;
+    esac
+}
+
+function gover() {
+	if [ $# -eq 0 ]; then
+        echo "usage: $FUNCNAME [.|<go version>: 1.11(.13), 1.12(.17), 1.13(.15), 1.14(7), 1.15(1), rc|list]"
+        return
+    fi
+    pushd . > /dev/null
+    cd $HOME/coding/go/root
+    if [ ! -L "go" ]; then 
+        ln -s go1.13.10 go
+    fi
+
+    case $1 in
+    *1.11*)
+        #GO111MODULE={auto|on|off}
+        if [ -d "go1.11.13" ]; then
+            unlink go
+            ln -s go1.11.13 go
+        fi
+        ;;
+    *1.12*)
+        if [ -d "go1.12.17" ]; then
+            unlink go
+            ln -s go1.12.17 go
+        fi
+        ;;
+    *1.13*)
+        if [ -d "go1.13.15" ]; then
+            unlink go
+            ln -s go1.13.15 go
+        fi
+        ;;
+    *1.14*)
+        if [ -d "go1.14.7" ]; then
+            unlink go
+            ln -s go1.14.7 go
+        fi
+        ;;
+    *1.15* | beta* | rc*)
+        if [ -d "go1.15.1" ]; then
+            unlink go
+            ln -s go1.15.1 go
+        else
+            echo "$FUNCNAME> $1 is not installed. Check the list."
+            ls -al $GOPATH/root
+        fi
+        ;;
+    . | current) 
+        #go version
+        ;;
+    list)
+        ls -al $GOPATH/root
+        ;;
+    down*)
+        open https://golang.org/dl/
+        ;;
+    *)
+        $FUNCNAME; return
+        ;;
+    esac
+
+    popd > /dev/null
+    echo "$FUNCNAME> `go version`"
+    gocode
+}
+
+function gomod() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [auto|on|off|mod|sum|<command>...]"
+		return
+	fi
+    case $1 in
+    . | check)
+        echo "$FUNCNAME> `go version` [`env | grep GO111MODULE`]" ;;
+    on | off |auto) 
+        export GO111MODULE=$1
+        $FUNCNAME .
+        ;;
+    init | tidy | vendor | verify | graph | why | edit | download)
+        go mod $1 ;;
+    tag)
+        git describe --always ;;
+    mod)
+        vi go.mod ;;
+    sum)
+        vi go.sum ;;
+    list)
+        go list -u -m $2 all ;;
+    vbuild)
+        go build --mod=vendor ./... ;;
+    rebuild)
+        rm -rf go.mod go.sum vendor/
+        go mod init
+        go mod tidy
+        go mod vendor
+        go build ./...
+        ;;
+    clean)
+        rm -f Gopkg.toml Gopkg.lock glide.yaml glide.lock vendor/vendor.json ;;
+    clobber)
+        go clean -modcache ;;
+    bak | backup)
+        mv go.mod go.mod.bak
+        mv go.sum go.sum.bak
+        go mod init
+        ;;
+    recover)
+        mv go.mod.bak go.mod
+        mv go.sum.bak go.sum
+        ;;
+    *)
+        go $@ ;;
+    esac
+}
+
+function goproxy() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [.(check)|direct|off|set|unset|up|down|test]"
+		return
+	fi
+    case $1 in
+    . | check)
+        echo "$FUNCNAME> `go version` [`go env | grep GOPROXY`], [`go env | grep GOPRIVATE`]"
+        return ;;
+    .. | unset)
+        export GOPROXY=""
+        export GOPRIVATE=""
+        $FUNCNAME check
+        ;;
+    direct | off) 
+        export GOPROXY=$1
+        $FUNCNAME check
+        ;;
+    set)
+        export GO111MODULE=on
+        export GOPROXY=https://goproxy.io
+        $FUNCNAME check
+        ;;
+    up)
+        export ATHENS_STORAGE=~/athens-storage
+        mkdir -p $ATHENS_STORAGE
+        docker run -d -v $ATHENS_STORAGE:/var/lib/athens --name athens-proxy -p '3000:3000' gomods/athens:latest
+        export GOPROXY=http://localhost:3000
+        docker ps
+        ;;
+    down) # docker rm -f athen-proxy
+        docker stop athens-proxy && docker rm $_
+        docker ps
+        ;;
+    test)
+        openpage http://localhost:3000
+        ;;
+    esac
+}
+
+# manage monibuca media server system
+function monibuca() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - Modulrized framework for media server>"
+		return
+	fi
+    MONIBUCA="github.com/Monibuca"
+    GOGET="go get -u"
+    PKGS=(\
+        engine plugin-rtmp plugin-rtsp plugin-hls plugin-ts plugin-hdl plugin-gateway plugin-record \
+        plugin-cluster plugin-jessica plugin-logrotate plugin-rtp plugin-webrtc
+        )
+    case $1 in
+    update | new)
+        for value in ${PKGS[*]}
+        do
+            GO111MODULE=on go get -u $MONIBUCA/$value
+        done
+        ;;
+    list)
+        for value in ${PKGS[*]}
+        do
+            GO111MODULE=on go list -m -versions $MONIBUCA/$value
+        done
+        ;;
+    doc)
+        go doc $GOPATH/src/$MONIBUCA/$2
+        ;;
+    pkg | mod)
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$MONIBUCA"
+        ls -cF $GOPATH/pkg/mod/$MONIBUCA
+        ;;
+    src | dir)
+        ls -alF $GOPATH/src/$MONIBUCA
+        ;;
+    home)
+        pushd .
+        cd $GOPATH/src/$MONIBUCA
+        ;;
+    back)
+        popd
+        ;;
+    open)
+        openpage https://$MONIBUCA
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# manage pion based webrtc system
+# removed : webrtc-v3-api-examples
+function pion() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <open|update|mod|src|doc|home|back> - WebRTC media system, v2.2.3 >"
+		return
+	fi
+    PION="github.com/pion"
+    GOGET="go get -u"
+    PKGS=(\
+        webrtc/v2 webrtc/v3 sdp/v2 ice ice/v2 rtp rtcp srtp sctp dtls quic udp stun turn turnc mdns \
+        datachannel transport rtpengine signaler mediadevices msapi codec \
+        logging ion rtwatch webt offline-browser-communication obs-wormhole rtsp-bench \
+        example-webrtc-applications awesome-pion
+        )
+    case $1 in
+    update | new)
+        for value in ${PKGS[*]}
+        do
+            GO111MODULE=on go get -u $PION/$value
+        done
+        ;;
+    list)
+        for value in ${PKGS[*]}
+        do
+            GO111MODULE=on go list -m -versions $PION/$value
+        done
+        ;;
+    doc)
+        go doc $GOPATH/src/$PION/$2
+        ;;
+    pkg | mod)
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION"
+        ls -cF $GOPATH/pkg/mod/$PION
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/sdp"
+        ls -cF $GOPATH/pkg/mod/$PION/sdp
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/ice"
+        ls -cF $GOPATH/pkg/mod/$PION/ice
+        echo "$FUNCNAME> $GOPATH/pkg/mod/$PION/webrtc"
+        ls -cF $GOPATH/pkg/mod/$PION/webrtc
+        ;;
+    src | dir)
+        ls -alF $GOPATH/src/$PION
+        ;;
+    home)
+        pushd .
+        cd $GOPATH/src/$PION
+        ;;
+    back)
+        popd
+        ;;
+    open)
+        openpage https://$PION/webrtc
+        ;;
+    *)
+		echo "$FUNCNAME> '$1' is an unknown command"
+        ;;
+    esac
+}
+
+# set system environment
+function setmod() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [lang|group]"
+        return
+    fi
+    case $1 in 
+    lang)
+        case $2 in 
+        kr | ko*)
+            export LANG=ko_KR.UTF-8
+            ;;
+        en* | C)
+            export LANG=en_US.UTF-8
+            ;;
+        *)
+            echo "$FUNCNAME> '$2' is an unknown lang type."
+            ;;
+        esac
+        echo "$FUNCNAME> LANG=$LANG"
+        ;;
+    group)
+        sudo usermod -aG sudo $USER
+        sudo usermod -aG docker $USER
+        ;;
+    esac
+}
+
+function openpage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <URL>"
+		return
+    fi
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        xdg-open $1
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        open $1
+    else
+        echo $1
+    fi
+}
+
+# search file and directory by the given string
+function gofind() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <search string> [path to start]"
+		return
+	fi
+
+    # search with string inclusion starting from the given folder
+	if [ $2 ]; then
+        find $2 -name "*$1*" -print
+    else
+        find . -name "*$1*" -print
+    fi
+}
+
+# fast file finder from HOME
+function gofile() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <filename> [path to start]"
+		return
+	fi
+
+    # case insensitive search
+	if [ $2 ]; then
+	    find $2 -iname $1 -type f -print
+    else
+	    find ~ -iname $1 -type f -print
+    fi
+}
+
+# fast package finder from GOPATH
+function gopath() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <package name>"
+		return
+	fi
+    list=$(eval find $GOPATH/src -iname $1 -type d -print)
+    if [ "$list" = "" ]; then
+        echo "$FUNCNAME> package '$1' not found in $GOPATH/src"
+        return
+    fi
+    for dir in $list; do
+        # exclude /vendor or /_ diectories
+        if [[ $dir = *"/vendor/"* ]] || [[ $dir = *"/_"* ]]; then
+            continue
+        else
+            cd $dir
+            return
+        fi
+    done
+    echo "$FUNCNAME> '$1' not found in $GOPATH/src"
+}
+
+# show web page for the current directory
+function gopage() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <.|url|github path|teamgrit|sikang>"
+		return
+	fi
+    case $1 in
+    . | cwd)
+        local dir=`pwd`
+        local package=${dir#*/src/}
+        IFS='/' array=($package)
+        local page=${array[0]}/${array[1]}/${array[2]}
+        IFS=''
+        echo "https://$page"
+        openpage https://$page >/dev/null
+        ;;
+    http*)
+        echo $1
+        openpage $1 >/dev/null ;;
+    *.com*)
+        openpage https://$1 >/dev/null ;;
+    teamgrit**)
+        openpage https://github.com/teamgrit-lab ;; 
+    sikang*)
+        openpage https://github.com/sikang99 ;;
+    stoney*)
+        openpage https://sikang99.github.io/ ;;
+    docker*)
+        openpage https://hub.docker.com/orgs/cojam/repositories ;;
+    *)
+        echo "https://github.com/$1"
+        openpage https://github.com/$1 >/dev/null
+        ;;
+    esac
+}
+
+# Git cloning with various source types
+function gitclone() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <package folder> on {github,gitlab}.com"
+		return
+	fi
+
+    local url=$1
+    local package=${url%.git} 
+
+    case $url in
+    http*://*)
+	    package=${url#http*://} 
+        ;;
+    github.com* | *golang.org* | tinygo.org* | gopkg.in* | gocv.io*)
+	    url=https://$1 
+        ;;
+    *)  # default on github.com
+        echo "$FUNCNAME> $url is not a url to git"
+        return
+        ;;
+    esac
+    result=$(git clone --recursive $url $package)
+    cd $package
+}
+
+# git clone by language type
+function get() {
+	if [ $# -lt 2 ]; then
+		echo "usage: $FUNCNAME [<language> <url of package>] are required."
+		return
+	fi
+    if [ -d $HOME/coding/$1/src ]; then
+        cd $HOME/coding/$1/src
+        gitclone $2
+    fi
+}
+
+# docker utility operation beside of basic commands
+function dkr() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME <taglist|compose|machine|layer|open|clean|run> <params...>"
+		return
+	fi
+    case $1 in
+    compose)
+        docker-compose $2 $3 $4
+        ;;
+    machine)
+        docker-machine $2 $3 $4
+        ;;
+    layer)
+        echo "$FUNCNAME> display layer informaton of the image $2"
+        docker save -o image.tar $2
+        dlayer -f image.tar -n 1000 | less
+        rm -f image.tar
+        ;;
+    open)
+        if [ "$2" = "" ]; then
+            echo "$FUNCNAME> $1 <repo name>"
+        else
+            echo "$FUNCNAME> open the dockerhub page ..."
+            openpage https://hub.docker.com/r/$2
+        fi
+        ;;
+    clean) 
+        echo "$FUNCNAME> docker cleaning ..."
+        docker container prune -f
+        docker network prune -f
+        docker system prune -f
+        docker volume prune -f
+        docker images
+        ;;
+    lint)
+        godolint $2 $3
+        ;;
+    run)
+        case $2 in
+        rust)
+            # https://hub.docker.com/r/wasm/toolchain/
+            docker run -it --rm -v $PWD:/project wasm/toolchain:latest /bin/bash --login
+            ;;
+        *)
+            echo "$FUNCNAME> $1 <rust>"
+            ;;
+        esac
+        ;;
+    taglist | tag)
+	    if [ $# = 1 ]; then
+            echo "$FUNCNAME> $1 <image name> [version]"
+            return
+        fi
+        image="$2"
+        tags=`wget -q https://registry.hub.docker.com/v1/repositories/${image}/tags -O - \
+            | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}'`
+        #   | jq -r '.[] | select(.name=="${version}") | .name'`
+        if [ "${tags}" == ""  ]; then
+            echo "image '$2' is not found"
+        else 
+            if [ "$#" == 2 ]; then
+                echo "${tags}"
+            else
+                version="$3"
+                for vtag in ${tags}; do
+                    if [[ ${vtag} == *${version}* ]]; then
+                        echo ${vtag}
+                    fi
+                done
+            fi 
+        fi
+        ;;
+    *)
+        docker $@
+        ;;
+    esac
+}
+
+function grpc() {
+	if [ $# = 0 ]; then
+		echo "usage: $FUNCNAME [debug|log|install|version]"
+		return
+	fi
+    case $1 in
+    open)
+        openpage https://www.grpc.io/
+        openpage https://github.com/grpc/grpc-go
+        openpage https://github.com/golang/protobuf
+        ;;
+    debug)
+        GIT_TAG="v1.2.0" # change as needed
+        go get -d -u github.com/golang/protobuf/protoc-gen-go
+        git -C "$(go env GOPATH)"/src/github.com/golang/protobuf checkout $GIT_TAG
+        go install github.com/golang/protobuf/protoc-gen-go
+        ;;
+    level | log)
+        export GRPC_GO_LOG_VERBOSITY_LEVEL=99 
+        export GRPC_GO_LOG_SEVERITY_LEVEL=info
+        echo "GRPC_GO_LOG_VERBOSITY_LEVEL=$GRPC_GO_LOG_VERBOSITY_LEVEL GRPC_GO_LOG_SEVERITY_LEVEL=$GRPC_GO_LOG_SEVERITY_LEVEL"
+        ;;
+    install)
+        brew tap grpc/grpc
+        brew install grpc
+        ;;
+    version)
+        brew info grpc
+        protoc --version
+        which protoc protoc-gen-go
+        ;;
+    esac
+}
+
+# start a simple http server and page open for the current directory
+function hopen() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [<dir>|check|kill|run(port,dir)], ex) hopen ."
+		return
+	fi
+    script_pid="/tmp/simplehttpserver.pid"
+    case $1 in
+    clean)
+        rm -f $script_pid
+        ;;
+    check | c)
+        if [ -f $script_pid ]; then
+            ps $(cat $script_pid)
+        fi
+        ;;
+    kill | k)
+        if [ -f "$script_pid" ]; then
+            kill -9 $(cat $script_pid)
+            rm -f $script_pid
+        fi
+        ;;
+    test | t)
+            script_name="$GOPATH/bin/simplehttpserver -port=9090 -dir=."
+            printf "$script_name\n"
+            eval $script_name &
+        ;;
+    run | r)
+        if [ $# -ge 3 -a -d "$3" ]; then
+            script_name="simplehttpserver -port=$2 -dir=$3"
+            printf "$script_name\n"
+            eval $script_name &
+            ps -ef | grep "$script_name" | grep -v grep | tr -s ' ' | cut -d ' ' -f3 > $script_pid
+            cat $script_pid
+            open "http://localhost:$2" 
+        fi
+        ;;
+    *)  # default run
+        hopen kill
+        hopen run "9090" "$1" > /dev/null
+        ;;
+    esac
+}
+
+function awsconf() {
+	if [ $# = 0 ]; then
+        echo "usage: $FUNCNAME [edit|info|key|minio]"
+		return
+	fi
+    case $1 in
+    edit)
+        vi ~/.aws/envs
+        source ~/.aws/envs
+        ;;
+    info)
+        echo "~/.aws/"; ls ~/.aws
+        echo "~/.aws/config"; cat ~/.aws/config
+        echo "~/.aws/credentials"; cat ~/.aws/credentials
+        env | grep AWS
+        env | grep MINIO
+        ;;
+    key)
+        cat ~/.aws/credentials
+        env | grep AWS
+        ;;
+    min*)
+        cat ~/.aws/miniokey
+        env | grep MINIO
+        ;;
+
+    *)  # default run
+        echo "$FUNCNAME> $1 is unknown command."
+        ;;
+    esac
+}
+
+# search repos in github.com
+function github() {
+	if [ $# -lt 2 ]; then
+        echo "usage: $FUNCNAME <lang:c|js|go|python|rust> <search string>"
+		return
+	fi
+    case $1 in
+    c | cpp | js | go | rust | python )
+        hub-search --lang=$1 $2
+        ;;
+    *)  # default run
+        echo "$FUNCNAME> $1 is unknown language."
+        ;;
+    esac
+}
+# ----------------------------------------------------------------------
+function rlogin() {
+	if [ $# -lt 1 ]; then
+        echo "usage: $FUNCNAME [ad|chat|was|media|maria|redis|janus|red5|test|origin|edgei|ext]"
+		return
+	fi
+    case $2 in
+    ftp)
+        prog=sftp opt="-P" ;;
+    *)
+        prog=ssh opt="-p" ;;
+    esac
+    #echo "$0 $1 $2 $prog $opt"
+    case $1 in
+    ad)
+        $prog $opt 22 teamgrit@52.231.200.95
+        ;;
+    chat)
+        $prog $opt 22 teamgrit@52.231.206.136
+        ;;
+    was)
+        $prog $opt 22 teamgrit@52.231.203.252
+        ;;
+    media)
+        $prog $opt 22 teamgrit@52.231.153.16
+        ;;
+    maria)
+        $prog $opt 22 teamgrit@52.231.166.162
+        ;;
+    redis)
+        $prog $opt 22 teamgrit@52.231.167.180
+        ;;
+    janus)
+        $prog $opt 22 teamgrit@52.231.167.25
+        ;;
+    pion)
+        $prog $opt 22 teamgrit@52.231.195.214
+        ;;
+    red5)
+        $prog $opt 22 teamgrit@52.231.194.100
+        ;;
+    wowza | test)
+        $prog $opt 22 teamgrit@52.231.161.223
+        ;;
+    origin)
+        $prog $opt 22 teamgrit@52.231.152.207
+        ;;
+    edge)
+        $prog $opt 22 teamgrit@52.231.165.131
+        ;;
+    edge11)
+        $prog $opt 22 teamgrit@52.231.154.236
+        ;;
+    edge12)
+        $prog $opt 22 teamgrit@52.231.163.249
+        ;;
+    test)
+        $prog $opt 22 teamgrit@
+        ;;
+    external | ext)
+        $prog $opt 22 teamgrit@52.231.204.44
+        ;;
+    rpi3)
+        $prog $opt 22 pi@192.168.0.111
+        ;;
+    rpi4)
+        $prog $opt 22 pi@192.168.0.107
+        ;;
+    cojam)
+        $prog $opt 10022 sikang@cojam.iptime.org
+        ;;
+    local | direct)
+        $prog $opt 22 sikang@192.168.0.45
+        ;;
+    *)  # default run
+        echo "$FUNCNAME> $prog $opt $1 is an unknown host."
+        ;;
+    esac
+}
+# ----------------------------------------------------------------------
+function cctv() {
+    case $1 in
+    axis)
+        ffplay rtsp://imoment:imoment@192.168.0.6:554/axis-media/media.amp
+        ;;
+    linux)
+        ffplay rtsp://192.168.0.13:8554/
+        ;;
+    rpi4)
+        ;;
+    *)  # default run
+        echo "usage: $FUNCNAME [axis|linux|rpi4]"
+        ;;
+    esac
+}
+# ----------------------------------------------------------------------
+function usage() {
+    setmod
+    openpage
+    gomod
+    goproxy
+    goto
+    gover
+    gofind
+    gofile
+    gopath
+    gopage
+    dkr
+    pion
+    monibuca
+    grpc
+    hopen
+    awsconf
+    github
+    rlogin
+    cctv
+}
+# ----------------------------------------------------------------------
+

@@ -36,7 +36,7 @@ git g:
 	@echo "make (git) [update|login|tag|status]"
 
 git-update gu:
-	git add .gitignore Makefile *.md go-funcs.sh config/
+	git add .
 	git commit -m "update contents /config"
 	git push
 
