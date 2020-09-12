@@ -29,15 +29,16 @@ run r:
 	./$(SCRIPT)
 
 copy cp:
-	cp ~/.bashrc go-funcs.sh
-	vi go-funcs.sh
+	#cp ~/.bashrc go-funcs.sh
+	#vi go-funcs.sh
+	cp ~/.zshrc zshrc
 # ---------------------------------------------------------------------------
 git g:
 	@echo "make (git) [update|login|tag|status]"
 
 git-update gu:
 	git add .
-	git commit -m "update contents /config"
+	git commit -m "update,$(USER)"
 	git push
 
 git-login gl:
